@@ -1,0 +1,38 @@
+{
+  "name": "p2p-backend",
+  "version": "0.0.1",
+  "description": "P2P Investors Marketplace",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "p2p",
+    "lending",
+    "investment",
+    "marketplace"
+  ],
+  "author": "Dmitry Scheglov",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^1.5.2",
+    "body-parser": "^1.14.1",
+    "express": "^4.13.3",
+    "method-override": "^2.3.5",
+    "model-api": "^1.0.0",
+    "mongoose": "^4.2.4",
+    "morgan": "^1.6.1",
+    "swig": "^1.4.2",
+    "winston": "^2.1.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DScheglov/p2p-backend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DScheglov/p2p-backend/issues"
+  },
+  "homepage": "https://github.com/DScheglov/p2p-backend#readme"
+}

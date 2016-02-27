@@ -3,7 +3,7 @@ P2P Marketplace backend
 
 Requirements
 ---
-mongodb, nodejs
+mongodb  v.2.4+, nodejs 4+ (ES2015 injections)
 
 
 Installation

@@ -3,46 +3,44 @@ var utils = require("util");
 var swig = require("swig");
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
-var entities = require("./entities");
+var ensureId = require('./tools/ensure-id');
 
 
 var accountTypes = ['Assets', 'Liability'];
 var accountStatuses = ["preopen", "open", "frozen", "closed"];
 var AccountSchema = Schema({
-	_id: String,
-	title: {type: String, required: true},
-	type: {type: String, enum: accountTypes, required: true},
-	GLNumber: String,
-	debit: {type: Number, 'default': 0, required: true},
-	credit: {type: Number, 'default': 0, required: true},
-	currency: {type: String, required: true},
-	status: {type: String, enum: accountStatuses, 'default': accountStatuses[0], required: true},
-	_pendingDebit: [{type: Schema.Types.ObjectId, ref: "Transaction"}],
-	_pendingCredit: [{type: Schema.Types.ObjectId, ref: "Transaction"}],
-	institution: {type: Schema.Types.ObjectId, ref: "Institution", required: true},
-	owner: {type: Schema.Types.ObjectId, ref: "Entity", required: false},
-	dailyBalance: [{
-		date : {type: Date, required: true, default: Date.now},
-		credit: {type: Number, required: true, default: 0},
-		debit: {type: Number, required: true, default: 0}
-	}]
+  _id: String,
+  title: {type: String, required: true},
+  type: {type: String, enum: accountTypes, required: true},
+  GLNumber: String,
+  debit: {type: Number, 'default': 0, required: true},
+  credit: {type: Number, 'default': 0, required: true},
+  currency: {type: String, required: true},
+  status: {type: String, enum: accountStatuses, 'default': accountStatuses[0], required: true},
+  _pendingDebit: [{type: Schema.Types.ObjectId, ref: "Transaction"}],
+  _pendingCredit: [{type: Schema.Types.ObjectId, ref: "Transaction"}],
+  institution: {type: Schema.Types.ObjectId, ref: "Institution", required: true},
+  owner: {type: Schema.Types.ObjectId, ref: "Entity", required: false},
+  dailyBalance: [{
+    date : {type: Date, required: true, default: Date.now},
+    credit: {type: Number, required: true, default: 0},
+    debit: {type: Number, required: true, default: 0}
+  }]
 }, {
-    toObject: { virtuals: true },
-    toJSON: { virtuals: true }
+  toObject: { virtuals: true },
+  toJSON: { virtuals: true }
 });
-AccountSchema
-	.virtual("number")
-		.set(function(v) {
-			this._id = v;
-			return v;
-		}).
-		get(function() {
-			return this._id;
-		});
+AccountSchema.virtual("number")
+.set(function(v) {
+  this._id = v;
+  return v;
+}).
+get(function() {
+  return this._id;
+});
 AccountSchema.virtual("balance").get(function() {
-	var balance = this.debit - this.credit;
-	return (this.type == "Active")?balance:-balance;
-
+  var balance = this.debit - this.credit;
+  return (this.type == "Assets")?balance:-balance;
 });
 
 AccountSchema.index({type: 1});
@@ -53,18 +51,19 @@ AccountSchema.index({currency: 1});
 AccountSchema.index({status: 1});
 
 var accountFactorySchema = new Schema({
-	institution: {type: Schema.Types.ObjectId, ref: "Institution", required: false},
-	code: {type: String, required: true},
-	title: String,
-	accountTitle: {type: String, required: true},
-	GLNumber: String,
-	prefix: String,
-	sufix: String,
-	template: String,
-	isPersonal: {type: Boolean, default: true},
-	accountType: {type: String, enum: accountTypes, required: true},
-	currency: {type: String, required: true},
-	sequence: {type: Number, required: true, default: 0}
+  institution: {type: Schema.Types.ObjectId, ref: "Institution", required: true},
+  code: {type: String, required: true},
+  title: String,
+  accountTitle: {type: String, required: true},
+  GLNumber: String,
+  institutionCode: String,
+  prefix: String,
+  sufix: String,
+  template: String,
+  isPersonal: {type: Boolean, default: true},
+  accountType: {type: String, enum: accountTypes, required: true},
+  currency: {type: String, required: true},
+  sequence: {type: Number, required: true, default: 0}
 });
 
 accountFactorySchema.index({institution: 1});
@@ -74,86 +73,108 @@ accountFactorySchema.index({GLNumber: 1});
 accountFactorySchema.index({accountType: 1});
 accountFactorySchema.index({currency: 1});
 
-accountFactorySchema.statics.next = function (institution, factoryCode, cb) {
-	var model = this;
-	return (model
-		.findOneAndUpdate({
-			institution: institution,
-			code: factoryCode}, {$inc: {sequence: 1}
-		 })
-		.populate("institution")
-		.exec(cb)
-	);
+accountFactorySchema.pre("save", function(next) {
+  var Institution = mongoose.model('Institution');
+  var self = this;
+  return Institution.findById(ensureId(this, 'institution'), function(err, inst) {
+    if (err) return next(err);
+    if (!inst) return next(
+      new Error("Institution ["+self.institution+"] is not found.")
+    );
+    self.institutionCode = inst.code;
+    next();
+  });
+});
+
+accountFactorySchema.statics.next = function (factory, cb) {
+  return (this
+    .findOneAndUpdate({_id: factory}, {$inc: {sequence: 1}}, {new: true})
+    .exec(cb)
+  );
 };
 
 accountFactorySchema.statics.openAccount = function(options, cb) {
-	var factoryCode = options.factoryCode; delete options.factoryCode;
-	var institution = options.institution; delete options.institution;
+  var theFactory = options.factory; delete options.factory;
 
-
-	return this.next(institution, factoryCode, function (err, factory) {
-		if (err) return cb(err, null);
-		if (!factory) {
-			return cb(new Error("Factory is not found."))
-		}
-		return openAccount(factory, options, cb);
-	});
+  return this.next(theFactory, function (err, factory) {
+    if (err) return cb(err, null);
+    if (!factory) {
+      return cb(new Error("Factory ['"+theFactory+"'] is not found."))
+    }
+    openAccount(factory, options, cb);
+  });
 };
 
 accountFactorySchema.methods.generate = function(options) {
-	var tS = this.template || "{{institution}}:{{prefix}}{{sequence|wide(-8)}}{{sufix}}-{{GLNumber}}.{{currency|upper}}";
-	var tmpl = swig.compile(tS);
-	return tmpl(utils._extend({
-		prefix: this.prefix,
-		sufix: this.sufix,
-		institution: this.institution.code,
-		owner: options.owner,
-		GLNumber: this.GLNumber,
-		currency: this.currency,
-		sequence: this.sequence
-	}, options));
+  var tS = this.template || "{{institution}}:{{prefix|wide(4)}}{{controll}}{{sequence|wide(-9)}}{{sufix}}-{{GLNumber}}.{{currency|upper}}";
+  var tmpl = swig.compile(tS);
+  return tmpl({
+    prefix: this.prefix,
+    sufix: this.sufix,
+    institution: this.institutionCode,
+    owner: options.owner && options.owner.code,
+    GLNumber: this.GLNumber,
+    currency: this.currency,
+    sequence: this.sequence,
+    controll: buildConrtoll(this.prefix, this.sequence, this.sufix)
+  });
 };
 
+function buildConrtoll() {
+  var s = "";
+  for (var i=0;i<arguments.length; i++) s += arguments[i];
+  var C = 0;
+  for (i=0;i<s.length;i++) C += parseInt(s.charAt(i), 10);
+  return C % 10;
+}
 
 function openAccount(factory, options, cb) {
-	var accountParams = utils._extend({}, options);
-	if (factory.isPersonal && !options.owner) {
-		return cb(new Error("Account ["+factory.code+"] must be personal. Please specify owner."), null);
-	}
-	if (options.owner && !utils.isObject(options.owner)) {
-		return entities.Entity.findById(new Schema.Types.Id(options.owner), function (err, owner) {
-			if (err) return cb(err, null);
-			if (!owner) return cb(new Error("Specified owner ['+options.owner+'] couldn't be found."), null);
-			options.owner = owner;
-			return openAccount(factory, options);
-		});
-	}
-	accountParams.number = factory.generate(options);
-	accountParams.title = accountParams.title || factory.accountTitle;
-	accountParams.type =  factory.accountType;
-	accountParams.GLNumber = accountParams.GLNumber || factory.GLNumber;
-	accountParams.currency = factory.currency;
-	accountParams.institution = factory.institution;
-	accountParams.owner = options.owner && options.owner.code || null;
-	var account = new Account(accountParams);
-	return account.save(cb);
+  var Entity = mongoose.model('Entity');
+  var accountParams = {};
+
+  if (factory.isPersonal && !options.owner) return cb(
+    new Error("Account ["+factory.code+"] must be personal. Please specify owner."),
+    null
+  );
+
+
+  if (options.owner && !options.owner._id) {
+    return Entity.findById(options.owner, function (err, owner) {
+      if (err) return cb(err, null);
+      if (!owner) return cb(
+        new Error("Specified owner ['+options.owner+'] couldn't be found."),
+        null
+      );
+      options.owner = owner;
+      return openAccount(factory, options, cb);
+    });
+  }
+  accountParams.number = factory.generate(options);
+  accountParams.title = options.title || factory.accountTitle;
+  accountParams.type =  factory.accountType;
+  accountParams.GLNumber = options.GLNumber || factory.GLNumber;
+  accountParams.currency = factory.currency;
+  accountParams.institution = ensureId(factory, 'institution');
+  accountParams.owner = ensureId(options, 'owner') || null;
+  accountParams.status = options.status || null;
+  var account = new Account(accountParams);
+  return account.save(cb);
 }
+
+swig.setFilter("wide", function (value, width, filler) {
+  var s = "" + value;
+  var left = width > 0;
+  width = Math.abs(width);
+  filler = (new Array(width - s.length + 1)).join(filler || "0");
+
+  if (left) return s + filler;
+  return filler + s;
+});
 
 var Account = mongoose.model("Account", AccountSchema);
 var AccountFactory = mongoose.model("AccountFactory", accountFactorySchema);
 
 module.exports = exports = {
-	Account: Account,
-	AccountFactory: AccountFactory
+  Account: Account,
+  AccountFactory: AccountFactory
 };
-
-swig.setFilter("wide", function (value, width, filler) {
-	var s = "" + value;
-	var left = width > 0;
-	width = Math.abs(width);
-	filler = (new Array(width - s.length + 1)).join(filler || "0");
-
-	if (left) return s + filler;
-	return filler + s;
-
-});

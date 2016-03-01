@@ -12,5 +12,4 @@ var ContractSchema = new Schema({
     gateway: {type: String, required: false, ref: "Account"}
   }
 
-
 });

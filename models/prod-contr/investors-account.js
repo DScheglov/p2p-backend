@@ -95,12 +95,12 @@ function withdrawAmount(options, callback) {
     tWithdraw.execute.bind(tWithdraw)
   ], function(err) {
     if (err) {
-      if (tFee.status === "done") {
+      if (tFee && tFee.status === "done") {
         tFee.statusDescription = err.message
         return tFee.cancel(
           function(error) {
             if (error) return callback(
-              new Error(err.message + " "+error.message)
+              new Error(err.message + " " + error.message)
             );
             callback(err);
           }

@@ -5,6 +5,7 @@ var ensureCallback = require("./tools/safe-callback").ensureCallback;
 var ensureId = require("./tools/ensure-id");
 
 var transStatuses = ["new", "approved", "pending", "applied", "canceling", "done", "failed"];
+
 var TransactionSchema = Schema({
   institution: {type: Schema.Types.ObjectId, ref: "Institution", required: true},
   debitAccount: {type: String, required: true, ref: "Account"},
@@ -15,7 +16,10 @@ var TransactionSchema = Schema({
   status: {type: String, enum: transStatuses, required: true, 'default': transStatuses[0]},
   statusDescription: String,
   lastModified: {type: Date, required: true, 'default': Date.now },
-  operatingDate: {type: Date, required: true}
+  operatingDate: {type: Date, required: true},
+  strictMode: {type: Boolean, default: false, required: true},
+  globalUniqueTag: {type: String, required: false},
+  contract: {type: Schema.Types.ObjectId, ref: "Contract", required: false}
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true }
@@ -26,15 +30,27 @@ TransactionSchema.index({"creditAccount": 1});
 TransactionSchema.index({"type": 1});
 TransactionSchema.index({"status": 1});
 TransactionSchema.index({"operatingDate": 1});
+TransactionSchema.index({"globalUniqueTag": 1}, {unique: true, sparse: true});
+TransactionSchema.index({"contract":1}, {sparse: true});
 
-TransactionSchema.pre("save", function(next) {
+TransactionSchema.pre('validate', function (next) {
+
+  if (!this.isNew) return next(); // Don't do for old transactions
+
   var Account = mongoose.model('Account');
   var accountsToBeLoaded = [];
   var self = this;
-  if (!this.debitAccount._id) accountsToBeLoaded.push('debitAccount');
-  if (!this.creditAccount._id) accountsToBeLoaded.push('creditAccount');
-  async.each(accountsToBeLoaded, function (aName, cb) {
-    var Q = Account.findById(self[aName]).populate("institution");
+  if (!this.debitAccount._id) {
+    accountsToBeLoaded.push(['debitAccount', true]);
+  }
+  if (!this.creditAccount._id) {
+    accountsToBeLoaded.push(['creditAccount', false]);
+  }
+  return async.each(accountsToBeLoaded, function (aObj, cb) {
+    var aName = aObj[0];
+    var needPopulate = aObj[1];
+    var Q = Account.findById(self[aName]);
+    if (needPopulate) Q = Q.populate("institution");
     Q.exec(function (err, A) {
       if (!A) return cb(
         new Error("Account ["+aName+"]="+self[aName]+" is not found.")
@@ -47,19 +63,20 @@ TransactionSchema.pre("save", function(next) {
     var dAI = ensureId(self.debitAccount, "institution");
     var cAI = ensureId(self.creditAccount, "institution");
     if (!dAI || ! cAI) return next(
-      new Error("Can't execute transaction for account(s) that is/are out of Institution");
+      new Error("Cann't to execute transaction for Account that is out of Institution")
     );
-    if (dAI.toString() != cAI) return next(
-      new Error("Can't execute transaction between Accounts in different institutions")
+    if (dAI.toString() != cAI.toString()) return next(
+      new Error("Cann't to execute transaction for Accounts that aren't in the same Institution")
     );
-    self.institution = dAI;
+    self.institution = self.debitAccount.institution;
+    self.operatingDate = self.institution.operatingDate;
     next();
-  })
+  });
 });
 
 TransactionSchema.methods.verify = function() {
   return true;
-};
+}
 
 TransactionSchema.methods.approve = function(callback) {
   callback = ensureCallback.apply(null, arguments);
@@ -68,6 +85,52 @@ TransactionSchema.methods.approve = function(callback) {
     return this.save(callback);
   };
 };
+
+TransactionSchema.methods.cancel = function(callback) {
+  var tx = this;
+  if (tx.status !== 'done') return callback(
+    new Error("Status of transaction doesn't allow it to be canceled.")
+  );
+  var Account = mongoose.model('Account');
+
+  return async.waterfall([
+    function (next) {
+      Account.findOneAndUpdate({
+        _id: tx.debitAccount,
+        _pendingDebit: {$ne: tx._id},
+        status: "open"
+      }, {
+        $push: {_pendingDebit: tx._id}
+      }, {new: 1}, function (err, acc) {
+        if (err) return next(err);
+        if (!acc) return next(new Error("Status of Account doesn't allow to cancel operations on it"));
+        next();
+      });
+    },
+    function (next) {
+      Account.findOneAndUpdate({
+        _id: tx.creditAccount,
+        _pendingCredit: {$ne: tx._id},
+        status: {$in: ["open", "preopen"]}
+      }, {
+        $push: {_pendingCredit: tx._id}
+      }, {new: 1}, function (err, acc) {
+        if (err) return next(err);
+        if (!acc) return next(new Error("Status of Account doesn't allow to cancel operations on it"));
+        next();
+      });
+    },
+    function (next) {
+      tx.status = "canceling";
+      tx.lastModified = new Date();
+      tx.save(next);
+    }
+  ], function (err) {
+    if (err) return callback(err);
+    return tx.execute(callback);
+  });
+
+}
 
 TransactionSchema.methods.execute = function (callback) {
   var Account = mongoose.model('Account');
@@ -114,30 +177,40 @@ TransactionSchema.methods.execute = function (callback) {
     if (tx.status != "pending") return;
     async.waterfall([
       function (next) {
-        Account.update({
+        Account.findOneAndUpdate({
           _id: tx.debitAccount,
           _pendingDebit: {$ne: tx._id},
           status: "open"
         }, {
           $inc: {debit: tx.amount},
           $push: {_pendingDebit: tx._id}
-        }, function (err, res) {
+        }, {new: 1}, function (err, acc) {
           if (err) return next(err);
-          if (res.n == 0) return next(new Error("Status of Account doesn't allow to debit it"));
+          if (!acc) return next(new Error("Status of Account doesn't allow to debit it"));
+          if (tx.strictMode) {
+            var balance = acc.credit - acc.debit;
+            if (acc.type === "Assets") balance = -balance;
+            if (balance < 0) return next(new Error("Red saldo of Debit Account"));
+          }
           next();
         });
       },
       function (next) {
-        Account.update({
+        Account.findOneAndUpdate({
           _id: tx.creditAccount,
           _pendingCredit: {$ne: tx._id},
           status: {$in: ["open", "preopen"]}
         }, {
           $inc: {credit: tx.amount},
           $push: {_pendingCredit: tx._id}
-        }, function (err, res) {
+        }, {new: 1}, function (err, acc) {
           if (err) return next(err);
-          if (res.n == 0) return next(new Error("Status of Account doesn't allow to credit it"));
+          if (!acc) return next(new Error("Status of Account doesn't allow to credit it"));
+          if (tx.strictMode) {
+            var balance = acc.credit - acc.debit;
+            if (acc.type === "Assets") balance = -balance;
+            if (balance < 0) return next(new Error("Red saldo of Credit Account"));
+          }
           next();
         });
       },
@@ -177,46 +250,52 @@ TransactionSchema.methods.execute = function (callback) {
         tx.save(_do(next));
       }
     ], function (err) {
-      if (err) return callback(err, tx);
-      callback(null, tx);
-    }
-  );
+        if (err) return callback(err, tx);
+        callback(null, tx);
+      }
+    );
+  };
+
+  function tx_rollback(err) {
+    var rollback_err = err;
+    async.waterfall([
+      function (next) {
+        tx.status = "canceling";
+        tx.lastModified = new Date();
+        tx.save(_do(next));
+      },
+      function (next) {
+        Account.update({
+          _id: tx.creditAccount,
+          _pendingCredit: tx._id
+        }, {
+          $inc: {credit: -tx.amount},
+          $pull: {_pendingCredit: tx._id}
+        }, _do(next));
+      },
+      function (next) {
+        Account.update({
+          _id: tx.debitAccount,
+          _pendingDebit: tx._id
+        }, {
+          $inc: {debit: -tx.amount},
+          $pull: {_pendingDebit: tx._id}
+        }, _do(next));
+      }
+    ], function (err) {
+        if (err) return callback(err, tx);
+        return tx_fail(rollback_err);
+      }
+    );
+  };
 };
 
-function tx_rollback(err) {
-  var rollback_err = err;
-  async.waterfall([
-    function (next) {
-      if (tx.status == "canceling") return next();
-      tx.status = "canceling";
-      tx.lastModified = new Date();
-      tx.save(_do(next));
-    },
-    function (next) {
-      Account.update({
-        _id: tx.creditAccount,
-        _pendingCredit: tx._id
-      }, {
-        $inc: {credit: -tx.amount},
-        $pull: {_pendingCredit: tx._id}
-      }, _do(next));
-    },
-    function (next) {
-      Account.update({
-        _id: tx.debitAccount,
-        _pendingDebit: tx._id
-      }, {
-        $inc: {debit: -tx.amount},
-        $pull: {_pendingDebit: tx._id}
-      }, _do(next));
-    }
-  ], function (err) {
-    if (err) return callback(err, tx);
-    return tx_fail(rollback_err);
-  }
-);
-};
-
+TransactionSchema.methods.approveAndExecute = function(callback) {
+  var self = this;
+  return self.approve(function(err) {
+    if (err) return callback(err);
+      self.execute(callback);
+  })
 };
 
 var Transaction = mongoose.model("Transaction", TransactionSchema);

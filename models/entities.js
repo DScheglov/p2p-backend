@@ -61,10 +61,10 @@ var legalEntitySchema = new Schema({
   manager: {type: Schema.Types.ObjectId, ref: 'Entity'},
   accounts : {
     payables: {type: String, required: false, ref: "Account"},
-    receivalbles: {type: String, required: false, ref: "Account"}
+    receivables: {type: String, required: false, ref: "Account"}
   }
 });
-
+legalEntitySchema.plugin(ensureAccounts, {subject: "legalEntity"});
 
 var Entity = mongoose.model("Entity", entitySchema);
 var privateIndividual = Entity.discriminator("PrivateIndividual", privateIndividualSchema);

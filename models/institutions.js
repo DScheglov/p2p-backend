@@ -16,7 +16,8 @@ var InstitutionSchema = new Schema({
     expenses: {type: String, required: false, ref: "Account"},
     current: {type: String, required: false, ref: "Account"}
   },
-  accountingPolicy: {type: Schema.Types.ObjectId, required: false, ref: "AccountingPolicy"}
+  accountingPolicy: {type: Schema.Types.ObjectId, required: false, ref: "AccountingPolicy"},
+  operatingDate: {type: Date, required: false}
 });
 InstitutionSchema.index({"country": 1});
 InstitutionSchema.index({"code": 1}, {"unique": true});

@@ -1,10 +1,12 @@
 var async = require("async");
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
+
+var SettlementPeriodSchema = require("./tools/settlements").SettlementPeriodSchema;
 var ensureCallback = require("./tools/safe-callback").ensureCallback;
 var ensureId = require("./tools/ensure-id");
 
-var transStatuses = ["new", "approved", "pending", "applied", "canceling", "done", "failed"];
+var transStatuses = ["new", "approved", "pending", "applied", "canceling", "done", "failed", "canceled"];
 
 var TransactionSchema = Schema({
   institution: {type: Schema.Types.ObjectId, ref: "Institution", required: true},
@@ -19,7 +21,12 @@ var TransactionSchema = Schema({
   operatingDate: {type: Date, required: true},
   strictMode: {type: Boolean, default: false, required: true},
   globalUniqueTag: {type: String, required: false},
-  contract: {type: Schema.Types.ObjectId, ref: "Contract", required: false}
+  contract: [{type: Schema.Types.ObjectId, ref: "Contract", required: false}],
+  settlementPeriod: {
+    type: SettlementPeriodSchema,
+    required: false
+  },
+  requiredStatus: {type: String, required: false}
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true }
@@ -40,10 +47,12 @@ TransactionSchema.pre('validate', function (next) {
   var Account = mongoose.model('Account');
   var accountsToBeLoaded = [];
   var self = this;
-  if (!this.debitAccount._id) {
+  if (!this.debitAccount ||
+      !this.debitAccount.institution ||
+      !this.debitAccount.institution.title) {
     accountsToBeLoaded.push(['debitAccount', true]);
   }
-  if (!this.creditAccount._id) {
+  if (!this.creditAccount || !this.creditAccount.type) {
     accountsToBeLoaded.push(['creditAccount', false]);
   }
   return async.each(accountsToBeLoaded, function (aObj, cb) {
@@ -88,6 +97,7 @@ TransactionSchema.methods.approve = function(callback) {
 
 TransactionSchema.methods.cancel = function(callback) {
   var tx = this;
+  callback = ensureCallback.apply(null, arguments);
   if (tx.status !== 'done') return callback(
     new Error("Status of transaction doesn't allow it to be canceled.")
   );
@@ -97,7 +107,6 @@ TransactionSchema.methods.cancel = function(callback) {
     function (next) {
       Account.findOneAndUpdate({
         _id: tx.debitAccount,
-        _pendingDebit: {$ne: tx._id},
         status: "open"
       }, {
         $push: {_pendingDebit: tx._id}
@@ -110,7 +119,6 @@ TransactionSchema.methods.cancel = function(callback) {
     function (next) {
       Account.findOneAndUpdate({
         _id: tx.creditAccount,
-        _pendingCredit: {$ne: tx._id},
         status: {$in: ["open", "preopen"]}
       }, {
         $push: {_pendingCredit: tx._id}
@@ -119,14 +127,12 @@ TransactionSchema.methods.cancel = function(callback) {
         if (!acc) return next(new Error("Status of Account doesn't allow to cancel operations on it"));
         next();
       });
-    },
-    function (next) {
-      tx.status = "canceling";
-      tx.lastModified = new Date();
-      tx.save(next);
     }
   ], function (err) {
     if (err) return callback(err);
+    tx.status = "canceling";
+    tx.requiredStatus = "canceled";
+    tx.lastModified = new Date();
     return tx.execute(callback);
   });
 
@@ -150,10 +156,11 @@ TransactionSchema.methods.execute = function (callback) {
   function tx_fail(err) {
     var fail_err = err;
     if (err) tx.statusDescription = err.message;
-    tx.status = "failed";
+    tx.status = tx.requiredStatus || "failed";
     tx.lastModified = new Date();
     return tx.save(function(err) {
       if (err) return callback(err, tx);
+      if (tx.status === "canceled") return callback(null, tx);
       callback(fail_err || new Error("Transaction failed"), tx);
     });
   };
@@ -182,7 +189,7 @@ TransactionSchema.methods.execute = function (callback) {
           _pendingDebit: {$ne: tx._id},
           status: "open"
         }, {
-          $inc: {debit: tx.amount},
+          $inc: {debit: tx.amount, currentDebit: tx.amount},
           $push: {_pendingDebit: tx._id}
         }, {new: 1}, function (err, acc) {
           if (err) return next(err);
@@ -201,7 +208,7 @@ TransactionSchema.methods.execute = function (callback) {
           _pendingCredit: {$ne: tx._id},
           status: {$in: ["open", "preopen"]}
         }, {
-          $inc: {credit: tx.amount},
+          $inc: {credit: tx.amount, currentCredit: tx.amount},
           $push: {_pendingCredit: tx._id}
         }, {new: 1}, function (err, acc) {
           if (err) return next(err);
@@ -269,7 +276,7 @@ TransactionSchema.methods.execute = function (callback) {
           _id: tx.creditAccount,
           _pendingCredit: tx._id
         }, {
-          $inc: {credit: -tx.amount},
+          $inc: {credit: -tx.amount, currentCredit: -tx.amount},
           $pull: {_pendingCredit: tx._id}
         }, _do(next));
       },
@@ -278,7 +285,7 @@ TransactionSchema.methods.execute = function (callback) {
           _id: tx.debitAccount,
           _pendingDebit: tx._id
         }, {
-          $inc: {debit: -tx.amount},
+          $inc: {debit: -tx.amount, currentDebit: -tx.amount},
           $pull: {_pendingDebit: tx._id}
         }, _do(next));
       }

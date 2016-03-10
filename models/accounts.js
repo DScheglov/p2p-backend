@@ -1,9 +1,12 @@
 
 var utils = require("util");
+var async = require("async");
+var assert = require("assert");
 var swig = require("swig");
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 var ensureId = require('./tools/ensure-id');
+var ensureCallback = require('./tools/safe-callback').ensureCallback;
 
 
 var accountTypes = ['Assets', 'Liability'];
@@ -15,17 +18,14 @@ var AccountSchema = Schema({
   GLNumber: String,
   debit: {type: Number, 'default': 0, required: true},
   credit: {type: Number, 'default': 0, required: true},
+  currentDebit: {type: Number, default: 0, required: true},
+  currentCredit: {type: Number, default: 0, required: true},
   currency: {type: String, required: true},
   status: {type: String, enum: accountStatuses, 'default': accountStatuses[0], required: true},
   _pendingDebit: [{type: Schema.Types.ObjectId, ref: "Transaction"}],
   _pendingCredit: [{type: Schema.Types.ObjectId, ref: "Transaction"}],
   institution: {type: Schema.Types.ObjectId, ref: "Institution", required: true},
-  owner: {type: Schema.Types.ObjectId, ref: "Entity", required: false},
-  dailyBalance: [{
-    date : {type: Date, required: true, default: Date.now},
-    credit: {type: Number, required: true, default: 0},
-    debit: {type: Number, required: true, default: 0}
-  }]
+  owner: {type: Schema.Types.ObjectId, ref: "Entity", required: false}
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true }
@@ -42,6 +42,76 @@ AccountSchema.virtual("balance").get(function() {
   var balance = this.debit - this.credit;
   return (this.type == "Assets")?balance:-balance;
 });
+
+AccountSchema.statics.closeOperatingDate = function(options, callback) {
+  try {
+    assert.ok(options);
+    assert.ok(options.operatingDate);
+    assert.ok(options.institution)
+  } catch(e) {
+    return callback(e);
+  }
+
+  var Account = this;
+  var accounts = 0;
+  var AccountStream = Account.find({
+    institution: ensureId(options, 'institution'),
+    status: "open"
+  }).stream(
+  ).on("data", function(account) {
+    var _stream = this;
+    console.log("Trying to call closeOperatingDate for Account: %s", account._id);
+    if (account.closeOperatingDate instanceof Function) {
+      _stream.pause();
+      account.closeOperatingDate(options, function (err) {
+        if (!err) accounts++;
+        toLog(err, account);
+        _stream.resume();
+      });
+    }
+  }).on("error", function(err) {
+    return callback(err);
+  }).on("close", done);
+
+  function done() {
+    callback(null, {accounts: accounts});
+  }
+
+  function toLog(err, doc) {
+    if (err) {
+      return console.error(err);
+    }
+    return console.log("date closed for Account: %s", doc._id);
+  }
+}
+
+AccountSchema.methods.closeOperatingDate = function(options, callback) {
+  var self = this;
+  var dB = mongoose.model("DailyBalance");
+  var closingDate = options.operatingDate;
+
+  var balanceToStore = new dB({
+    institution: this.institution,
+    operatingDate: closingDate,
+    account: this._id,
+    debit: this.debit,
+    credit: this.credit,
+    currentDebit: this.currentDebit,
+    currentCredit: this.currentCredit
+  });
+
+  self.currentDebit = self.currentCredit = 0;
+
+  return async.waterfall([
+    function (next) {
+      next = ensureCallback.apply(null, arguments);
+      balanceToStore.save(next)
+    }, function (_db, next) {
+      next = ensureCallback.apply(null, arguments);
+      self.save(next)
+    }
+  ], callback);
+}
 
 AccountSchema.index({type: 1});
 AccountSchema.index({GLNumber: 1});
@@ -171,8 +241,23 @@ swig.setFilter("wide", function (value, width, filler) {
   return filler + s;
 });
 
+var dailyBalanceSchema = new Schema({
+  institution: {type: Schema.Types.ObjectId, ref: "Institution", required: true},
+  operatingDate: {type: Date, required: true},
+  account: {type: String, ref: "Account", required: true},
+  debit: {type: Number, required:true},
+  credit: {type: Number, required: true},
+  currentDebit: {type: Number, required: true},
+  currentCredit: {type: Number, required: true}
+});
+dailyBalanceSchema.index({institution: 1});
+dailyBalanceSchema.index({operatingDate: 1});
+dailyBalanceSchema.index({account: 1, operatingDate: 1}, {unique: 1});
+
+
 var Account = mongoose.model("Account", AccountSchema);
 var AccountFactory = mongoose.model("AccountFactory", accountFactorySchema);
+var DailyBalance = mongoose.model("DailyBalance", dailyBalanceSchema);
 
 module.exports = exports = {
   Account: Account,

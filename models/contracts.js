@@ -1,7 +1,10 @@
+var assert = require("assert");
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 var ProductSchema = require("./products").ProductSchema.options;
+var SettlementPeriodSchema = require("./tools/settlements").SettlementPeriodSchema;
+var ensureId = require("./tools/ensure-id");
 
 var contractStatuses = ["new", "active", "closed"];
 var ContractSchema = new Schema({
@@ -15,7 +18,12 @@ var ContractSchema = new Schema({
     gateway: {type: String, required: false, ref: "Account"}
   },
   productCode: {type: String, required: true},
-  product: {type: ProductSchema, required: true}
+  product: {type: ProductSchema, required: true},
+  settlementPeriod: {
+    type: SettlementPeriodSchema,
+    required: false
+  },
+  settlementDayOfMonth: {type: Number, required: true, default: 1, min: 1, max: 28}
 });
 ContractSchema.index({"institution": 1});
 ContractSchema.index({"productCode": 1});
@@ -39,7 +47,7 @@ ContractSchema.pre("validate", function (next) {
   return Product.findOne({
     institution: this.institution,
     code: this.productCode
-  }, function (err, p){
+  }, function (err, p) {
     if (err) return next(err);
     if (!p) return next(
       new Error("Product was not found.")
@@ -65,6 +73,82 @@ ContractSchema.pre("save", function(next) {
     this.product.accountingPolicy, this, event, next
   );
 });
+
+ContractSchema.statics.closeOperatingDate = function (options, callback) {
+  try {
+    assert.ok(options);
+    assert.ok(options.operatingDate);
+    assert.ok(options.institution)
+  } catch(e) {
+    return callback(e);
+  }
+  var Contract = this;
+  var contracts = 0;
+  var ContractStream = Contract.find({
+    institution: ensureId(options, "institution"),
+    status: "active"
+  }).stream().on("data", function(contract) {
+    var _stream = this;
+    if (contract.closeOperatingDate instanceof Function) {
+      _stream.pause();
+      contract.closeOperatingDate(options, function (err) {
+        if (!err) contracts++;
+        toLog(err, contract);
+        _stream.resume();
+      });
+    }
+  }).on("error", function(err) {
+    return callback(err);
+  }).on("close", done);
+
+  function done() {
+    return callback(null, {contracts: contracts});
+  }
+
+  function toLog(err, doc) {
+    if (err) {
+      return console.error(err);
+    }
+    return console.log("date closed for %s: %s", doc.__t, doc._id);
+  }
+}
+
+ContractSchema.statics.openOperatingDate = function (options, callback) {
+  try {
+    assert.ok(options);
+    assert.ok(options.operatingDate);
+    assert.ok(options.institution)
+  } catch(e) {
+    return callback(e);
+  }
+  var Contract = this;
+  var contracts = 0;
+  var ContractStream = Contract.find({
+    institution: ensureId(options, "institution"),
+    status: "active"
+  }).stream(
+  ).on("data", function(contract) {
+    if (contract.openOperatingDate instanceof Function) {
+      contract.openOperatingDate(options, function (err) {
+        if (!err) contracts++;
+        toLog(err, contract);
+      });
+    }
+  }).on("error", function(err) {
+    return callback(err);
+  }).on("close", done);
+
+  function done() {
+    return callback(null, {contracts: contracts});
+  }
+
+  function toLog(err, doc) {
+    if (err) {
+      return console.error(err);
+    }
+    return console.log("date opened for %s: %s", doc.__t, doc._id);
+  }
+}
 
 var Contract = mongoose.model("Contract", ContractSchema);
 

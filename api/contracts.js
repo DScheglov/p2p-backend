@@ -3,7 +3,10 @@ var Contract = require('../models/contracts').Contract;
 module.exports = exports = function (ModelAPI) {
 
   ModelAPI.expose(Contract, {
-    searchMethod: 'GET'
+    searchMethod: 'GET',
+    exposeStatic: {
+      "*": true
+    }
   })
 
   return {};

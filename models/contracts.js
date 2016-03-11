@@ -1,10 +1,14 @@
+var async = require("async");
 var assert = require("assert");
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 var ProductSchema = require("./products").ProductSchema.options;
-var SettlementPeriodSchema = require("./tools/settlements").SettlementPeriodSchema;
+var settlements = require("./tools/settlements");
+var SettlementPeriodSchema = settlements.SettlementPeriodSchema;
+var defineSP = settlements.define;
 var ensureId = require("./tools/ensure-id");
+var ensureCallback = require("./tools/safe-callback").ensureCallback;
 
 var contractStatuses = ["new", "active", "closed"];
 var ContractSchema = new Schema({
@@ -59,6 +63,8 @@ ContractSchema.pre("validate", function (next) {
 
 ContractSchema.pre("save", function(next) {
   var event = null;
+  var self = this;
+  var actions = [];
 
   if (this.isNew) {
     event = "creation";
@@ -66,12 +72,41 @@ ContractSchema.pre("save", function(next) {
     event = "acceptance";
   }
 
-  if (!event) return next();
+  if (this.status === "active" && !this.settlementPeriod) {
+    if (!this.institution.operatingDate) actions.push(populateInstitution);
+    actions.push(defineSettlementPeriod);
+  }
 
-  var ProductPolicy = mongoose.model("AccountingProductPolicy");
-  ProductPolicy.ensureAccounts(
-    this.product.accountingPolicy, this, event, next
-  );
+  if (event) actions.push(ensureAccounts);
+
+  if (!actions.length) return next();
+
+  async.waterfall(actions, function(err) {
+    return next(err);
+  });
+
+  function populateInstitution() {
+    var next = ensureCallback.apply(null, arguments);
+    return self.populate("institution", next);
+  }
+
+  function defineSettlementPeriod() {
+    var next = ensureCallback.apply(null, arguments);
+    self.settlementPeriod = defineSP({
+      operatingDate: self.institution.operatingDate,
+      settlementDayOfMonth: self.settlementDayOfMonth
+    });
+    return next();
+  }
+
+  function ensureAccounts() {
+    var next = ensureCallback.apply(null, arguments);
+    var ProductPolicy = mongoose.model("AccountingProductPolicy");
+    ProductPolicy.ensureAccounts(
+      self.product.accountingPolicy, self, event, next
+    );
+  }
+
 });
 
 ContractSchema.statics.closeOperatingDate = function (options, callback) {

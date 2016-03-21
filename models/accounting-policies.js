@@ -5,7 +5,7 @@ var Schema = mongoose.Schema;
 var policySchema = new Schema({
   title: {type: String, required: true},
   description: String,
-  institution : {type: Schema.Types.ObjectId, ref: "institution", required: true},
+  institution : {type: Schema.Types.ObjectId, ref: "Institution", required: true},
   factories: {
     institution: {
       incomes: {type: Schema.Types.ObjectId, required: false, ref: "AccountFactory"},

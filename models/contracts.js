@@ -100,6 +100,7 @@ ContractSchema.pre("save", function(next) {
   }
 
   function ensureAccounts() {
+
     var next = ensureCallback.apply(null, arguments);
     var ProductPolicy = mongoose.model("AccountingProductPolicy");
     ProductPolicy.ensureAccounts(

@@ -9,7 +9,7 @@ var path = require('path');
 var app = express();
 var log = require("./lib/logger")(module);
 var instHeader = require('./lib/institution-header');
-var db = require("./models").db;
+var db = require("./models/index").db;
 var ModelAPI = require('./api')(app);
 
 app.use(morgan('combined')); // выводим все запросы со статусами в консоль

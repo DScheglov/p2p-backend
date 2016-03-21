@@ -212,7 +212,7 @@ function openAccount(factory, options, cb) {
     return Entity.findById(options.owner, function (err, owner) {
       if (err) return cb(err, null);
       if (!owner) return cb(
-        new Error("Specified owner ['+options.owner+'] couldn't be found."),
+        new Error("Specified owner ["+options.owner+"] couldn't be found."),
         null
       );
       options.owner = owner;

@@ -8,11 +8,11 @@ var Contract = require("../contracts").Contract;
 var ensureCallback = require("../tools/safe-callback").ensureCallback;
 var settlements = require('../tools/settlements');
 
-var InvestorAccountProductSchema = require("./products").InvestorAccountProductSchema;
+var CurrentAccountProductSchema = require("./products").CurrentAccountProductSchema;
 var tx = require("./transactions");
 
-var InvestorAccountContractSchema = new Schema({
-  product: {type: InvestorAccountProductSchema.options, required: true},
+var CurrentAccountContract = new Schema({
+  product: {type: CurrentAccountProductSchema.options, required: true},
   accounts: {
     current: {type: String, ref: "Account"},
     holds: {type: String, ref: "Account"},
@@ -20,16 +20,16 @@ var InvestorAccountContractSchema = new Schema({
   }
 });
 
-InvestorAccountContractSchema.statics.refill = wrapInstanceMethod("refill");
-InvestorAccountContractSchema.methods.refill = refillAccount;
-InvestorAccountContractSchema.statics.withdraw = wrapInstanceMethod("withdraw");
-InvestorAccountContractSchema.methods.withdraw = withdrawAmount;
-InvestorAccountContractSchema.statics.accrueInterests = wrapInstanceMethod("accrueInterests");
-InvestorAccountContractSchema.methods.accrueInterests = accrueInterests;
-InvestorAccountContractSchema.statics.payoutInterests = wrapInstanceMethod("payoutInterests");
-InvestorAccountContractSchema.methods.payoutInterests = payoutInterests;
-InvestorAccountContractSchema.methods.closeOperatingDate = closeOperatingDate;
-InvestorAccountContractSchema.methods.openOperatingDate = openOperatingDate;
+CurrentAccountContract.statics.refill = wrapInstanceMethod("refill");
+CurrentAccountContract.methods.refill = refillAccount;
+CurrentAccountContract.statics.withdraw = wrapInstanceMethod("withdraw");
+CurrentAccountContract.methods.withdraw = withdrawAmount;
+CurrentAccountContract.statics.accrueInterests = wrapInstanceMethod("accrueInterests");
+CurrentAccountContract.methods.accrueInterests = accrueInterests;
+CurrentAccountContract.statics.payoutInterests = wrapInstanceMethod("payoutInterests");
+CurrentAccountContract.methods.payoutInterests = payoutInterests;
+CurrentAccountContract.methods.closeOperatingDate = closeOperatingDate;
+CurrentAccountContract.methods.openOperatingDate = openOperatingDate;
 
 function refillAccount(options, callback) {
   try {
@@ -41,7 +41,7 @@ function refillAccount(options, callback) {
   }
   var self = this;
 
-  var t = new tx.IA_Refill({
+  var t = new tx.CA_Refill({
     debitAccount: this.product.accounts.incomingGateway,
     creditAccount: this.accounts.current,
     amount: options.amount,
@@ -92,7 +92,7 @@ function withdrawAmount(options, callback) {
 
   function transactFee(next) {
     if (fee > 0) {
-      tFee = new tx.IA_Withdrawl_Fee({
+      tFee = new tx.CA_Withdrawl_Fee({
         debitAccount: self.accounts.current,
         creditAccount: self.product.accounts.incomes,
         amount: fee,
@@ -108,7 +108,7 @@ function withdrawAmount(options, callback) {
   }
 
   function transact(tFee, next) {
-    var tWithdraw = new tx.IA_Withdraw({
+    var tWithdraw = new tx.CA_Withdraw({
       debitAccount: self.accounts.current,
       creditAccount: self.product.accounts.outgoingGateway,
       amount: options.amount,
@@ -179,7 +179,7 @@ function accrueInterests(callback) {
 
   function transact(next) {
     if (interests === 0) return next();
-    iTx = new tx.IA_Interests_Acrruing({
+    iTx = new tx.CA_Interests_Acrruing({
       debitAccount: self.product.accounts.expenses,
       creditAccount: self.accounts.interests,
       amount: interests,
@@ -222,7 +222,7 @@ function payoutInterests(callback) {
 
   function transact(next) {
     if (interests === 0) return next();
-    var pTx = new tx.IA_Interests_Payout({
+    var pTx = new tx.CA_Interests_Payout({
       debitAccount: self.accounts.interests,
       creditAccount: self.accounts.current,
       amount: interests,
@@ -259,7 +259,7 @@ function openOperatingDate(options, callback) {
 
 function wrapInstanceMethod(method) {
   return function (options, callback) {
-    var Contract = mongoose.model("InvestorAccountContract");
+    var Contract = mongoose.model("CurrentAccountContract");
     var q = {};
     options = utils._extend({}, options);
     if (options.id) {
@@ -280,10 +280,11 @@ function wrapInstanceMethod(method) {
   }
 }
 
-var InvestorAccountContract = Contract.discriminator(
-  "InvestorAccountContract",  InvestorAccountContractSchema
+var CurrentAccountContract = Contract.discriminator(
+  "CurrentAccountContract",  CurrentAccountContract
+ 
 );
 
 module.exports = exports = {
-  InvestorAccountContract: InvestorAccountContract
+  CurrentAccountContract: CurrentAccountContract
 }

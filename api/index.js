@@ -10,7 +10,7 @@ module.exports = exports = function(app) {
   require('./accounting-policies')(ModelAPI);
   require('./products')(ModelAPI);
   require('./contracts')(ModelAPI);
-  require('./prod-contr/investors-account')(ModelAPI);
+  require('./products/current-account')(ModelAPI);
 
   return ModelAPI;
 }

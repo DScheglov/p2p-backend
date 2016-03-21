@@ -67,11 +67,11 @@ var legalEntitySchema = new Schema({
 legalEntitySchema.plugin(ensureAccounts, {subject: "legalEntity"});
 
 var Entity = mongoose.model("Entity", entitySchema);
-var privateIndividual = Entity.discriminator("PrivateIndividual", privateIndividualSchema);
-var legalEntity = Entity.discriminator("LegalEntity", legalEntitySchema);
+var PrivateIndividual = Entity.discriminator("PrivateIndividual", privateIndividualSchema);
+var LegalEntity = Entity.discriminator("LegalEntity", legalEntitySchema);
 
 module.exports = exports = {
   Entity: Entity,
-  privateIndividual: privateIndividual,
-  legalEntity: legalEntity
+  PrivateIndividual: PrivateIndividual,
+  LegalEntity: LegalEntity
 };

@@ -2,4 +2,8 @@
 /fictures/
 .project
 .settings
+.vscode
 /coverage/
+/admin/
+/pinguin/
+*.log

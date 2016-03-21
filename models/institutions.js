@@ -1,10 +1,10 @@
 var assert = require('assert');
+var utils = require('util');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ensureAccounts = require('./tools/ensure-accounts');
 
 var ActiveInactive = ['inactive', 'active'];
-
 
 var InstitutionSchema = new Schema({
   title: {type: String, required: true},
@@ -28,6 +28,7 @@ InstitutionSchema.methods.closeOperatingDate = function(options, callback) {
   var self = this;
   var contractsProcessed = false;
   var accountsProcessed = false;
+  var totals = {};
 
   var options = {
     institution: self._id,
@@ -38,6 +39,7 @@ InstitutionSchema.methods.closeOperatingDate = function(options, callback) {
     if (err) return callback(err);
     contractsProcessed = true;
     console.dir(res);
+    utils._extend(totals, res);
     closeForAccounts();
   });
 
@@ -46,6 +48,7 @@ InstitutionSchema.methods.closeOperatingDate = function(options, callback) {
       if (err) return callback(err);
       accountsProcessed = true;
       console.dir(res);
+      utils._extend(totals, res);
       done();
     });
   }
@@ -55,7 +58,8 @@ InstitutionSchema.methods.closeOperatingDate = function(options, callback) {
       self.closedOperatingDate = self.operatingDate;
       self.operatingDate = null;
       self.save(function(err, _self) {
-        return callback(err, _self);
+        totals.institution = _self;
+        return callback(err, totals);
       });
     }
   }
@@ -85,6 +89,7 @@ InstitutionSchema.methods.openOperatingDate = function(options, callback) {
       if (err) return callback(err);
       contractsProcessed = true;
       console.dir(res);
+      res.institution = _self;
       callback(null, res);
     });
   });

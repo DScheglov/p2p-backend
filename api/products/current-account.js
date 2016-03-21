@@ -1,9 +1,9 @@
-var models = require('../../models/investors-account');
+var models = require('../../models/current-account');
 
 module.exports = exports = function (ModelAPI) {
   var ContractAPI = ModelAPI.expose(models.Contract, {
     searchMethod: 'GET',
-    plural: "InvestorAccountContracts",
+    plural: "CurrentAccountContracts",
     expose: {
       refill: true,
       withdraw: true,
@@ -19,7 +19,7 @@ module.exports = exports = function (ModelAPI) {
   });
   var ProductAPI = ModelAPI.expose(models.Product, {
     searchMethod: 'GET',
-    plural: "InvestorAccountProducts"
+    plural: "CurrentAccountProducts"
   });
   return {};
 }

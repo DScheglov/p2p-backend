@@ -197,7 +197,7 @@ TransactionSchema.methods.execute = function (callback) {
           if (tx.strictMode) {
             var balance = acc.credit - acc.debit;
             if (acc.type === "Assets") balance = -balance;
-            if (balance < 0) return next(new Error("Red saldo of Debit Account"));
+            if (balance < 0) return next(new Error("Negative balance of debitAccount"));
           }
           next();
         });
@@ -216,7 +216,7 @@ TransactionSchema.methods.execute = function (callback) {
           if (tx.strictMode) {
             var balance = acc.credit - acc.debit;
             if (acc.type === "Assets") balance = -balance;
-            if (balance < 0) return next(new Error("Red saldo of Credit Account"));
+            if (balance < 0) return next(new Error("Negative balance of creditAccount"));
           }
           next();
         });

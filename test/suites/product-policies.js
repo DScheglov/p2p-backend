@@ -269,6 +269,32 @@ describe("models.AccountingProductPolicy", function (done) {
         }
       )
     });
+
+    it("should open new account and shouldn't open already assigned account", function(done) {
+
+      var contract = {
+        owner: fixtures.entities[0]._id,
+        accounts: {
+          interests: "number: 5"
+        }
+      };
+      ProductPolicy.ensureAccounts(
+        fixtures.policies[2]._id, contract, ["interests", "receivables"],
+        function(err, _c) {
+          assert.ok(!err, "Error occured: "+(err&&err.message));
+          assert.ok(_c);
+          assert.equal(contract, _c);
+          assert.ok(_c.accounts.interests);
+          assert.equal(_c.accounts.interests, "number: 5");
+          assert.ok(_c.accounts.receivables);
+          assert.equal(_c.accounts.receivables.number, "001:28090000000001-2809.EUR");
+          assert.equal(_c.accounts.receivables._id, "001:28090000000001-2809.EUR");
+          assert.equal(Object.keys(_c.accounts).length, 2);
+          done();
+        }
+      )
+    });
+
   });
 
   after(function (done) {

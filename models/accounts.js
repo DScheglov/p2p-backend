@@ -1,4 +1,3 @@
-
 var utils = require("util");
 var async = require("async");
 var assert = require("assert");
@@ -7,7 +6,6 @@ var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 var ensureId = require('./tools/ensure-id');
 var ensureCallback = require('./tools/safe-callback').ensureCallback;
-
 
 var accountTypes = ['Assets', 'Liability'];
 var accountStatuses = ["preopen", "open", "frozen", "closed"];
@@ -45,9 +43,9 @@ AccountSchema.virtual("balance").get(function() {
 
 AccountSchema.statics.closeOperatingDate = function(options, callback) {
   try {
-    assert.ok(options);
-    assert.ok(options.operatingDate);
-    assert.ok(options.institution)
+    assert.ok(options, "You should specify options");
+    assert.ok(options.operatingDate, "You should specify closing operatingDate");
+    assert.ok(options.institution, "You should specify institution");
   } catch(e) {
     return callback(e);
   }

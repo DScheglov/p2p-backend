@@ -14,7 +14,19 @@ describe("settlements.define", function (done) {
     done();
   });
 
+  it("should create a period for calendar month", function (done) {
+    var SP = defineSP({
+      operatingDate: "2016-03-01",
+      settlementDayOfMonth: 1
+    });
+    assert.equal(SP.start.toISOString(), (new Date("2016-03-01")).toISOString());
+    assert.equal(SP.end.toISOString(), (new Date("2016-03-31")).toISOString());
+    done();
+  });
+
 });
+
+
 
 describe("settlements.nextPeriod", function () {
 

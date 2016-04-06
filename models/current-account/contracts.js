@@ -282,7 +282,6 @@ function wrapInstanceMethod(method) {
 
 var CurrentAccountContract = Contract.discriminator(
   "CurrentAccountContract",  CurrentAccountContract
- 
 );
 
 module.exports = exports = {

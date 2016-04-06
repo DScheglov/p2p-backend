@@ -14,7 +14,7 @@ var SettlementPeriodSchema = new Schema({
 
   var OD = new Date(options.operatingDate);
   var start = OD;
-  var nextMonth = OD.getUTCDate() > options.settlementDayOfMonth ? 1 : 0;
+  var nextMonth = OD.getUTCDate() >= options.settlementDayOfMonth ? 1 : 0;
   var end = new Date(start);
   end.setUTCMonth(OD.getUTCMonth() + nextMonth);
   end.setUTCDate(options.settlementDayOfMonth - 1);

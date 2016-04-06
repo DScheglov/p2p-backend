@@ -1,6 +1,5 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
-var ensureAccounts = require("./tools/ensure-accounts");
 
 var entitySchema = new Schema({
   title: {type: String, required: true},
@@ -17,12 +16,10 @@ var entitySchema = new Schema({
   }],
   institution: {type: Schema.Types.ObjectId, ref: "Institution", required: true}
 });
-
 entitySchema.index({institution: 1});
 entitySchema.index({code: 1});
 entitySchema.index({title: 1});
 entitySchema.index({updated: -1});
-
 
 var privateIndividualSchema = new Schema({
   name: {
@@ -48,7 +45,6 @@ var privateIndividualSchema = new Schema({
     current: {type: String, required: false, ref: "Account"}
   }
 });
-privateIndividualSchema.plugin(ensureAccounts, {subject: "privateIndividual"});
 privateIndividualSchema.index({"idDocument.number": 1, sparse: true});
 privateIndividualSchema.index({"email": 1, sparse: true});
 privateIndividualSchema.index({"phone": 1, sparse: true});
@@ -64,7 +60,6 @@ var legalEntitySchema = new Schema({
     receivables: {type: String, required: false, ref: "Account"}
   }
 });
-legalEntitySchema.plugin(ensureAccounts, {subject: "legalEntity"});
 
 var Entity = mongoose.model("Entity", entitySchema);
 var PrivateIndividual = Entity.discriminator("PrivateIndividual", privateIndividualSchema);

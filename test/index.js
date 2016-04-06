@@ -1,6 +1,10 @@
 require('./suites/settlement-tools');
+require('./suites/status-history');
 require('./suites/institutions');
 require('./suites/entities');
+require('./suites/accounts');
 require('./suites/account-factories');
 require('./suites/transactions');
 require('./suites/product-policies');
+require('./suites/products');
+require('./suites/contracts');

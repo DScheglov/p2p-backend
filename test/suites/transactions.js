@@ -10,7 +10,7 @@ var fixtures = {
   accounts: require('../fixtures/accounts')
 }
 
-describe("models.Transacion", function (done) {
+describe("models.Transaction", function (done) {
 
   before(function(done) {
     var dbName = "temp_db_" + mongoose.Types.ObjectId().toString();

@@ -2,7 +2,6 @@ var assert = require('assert');
 var utils = require('util');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var ensureAccounts = require('./tools/ensure-accounts');
 
 var ActiveInactive = ['inactive', 'active'];
 

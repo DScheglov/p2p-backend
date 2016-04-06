@@ -55,6 +55,11 @@ module.exports = exports = [
         "accountName" : "interests",
         "factory" : ObjectId("56e2896172275316068bb186"),
         "openOn" : "first-usage"
+      },
+      {
+        "accountName" : "receivables",
+        "factory" : ObjectId("56d560be362dc10707701934"),
+        "openOn" : "acceptance"
       }
     ]
   }

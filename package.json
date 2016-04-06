@@ -21,13 +21,14 @@
     "express": "^4.13.3",
     "method-override": "^2.3.5",
     "model-api": "^1.0.13",
-    "mongoose": "^4.2.4",
+    "mongoose": "^4.4.10",
     "morgan": "^1.6.1",
     "swig": "^1.4.2",
     "winston": "^2.1.0"
   },
   "devDependencies": {
-    "mocha": "^2.4.5"
+    "mocha": "^2.4.5",
+    "timekeeper": "0.0.5"
   },
   "repository": {
     "type": "git",

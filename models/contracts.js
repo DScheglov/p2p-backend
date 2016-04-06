@@ -9,14 +9,13 @@ var SettlementPeriodSchema = settlements.SettlementPeriodSchema;
 var defineSP = settlements.define;
 var ensureId = require("./tools/ensure-id");
 var ensureCallback = require("./tools/safe-callback").ensureCallback;
+var statusHistory = require("./plugins/status-history");
 
 var contractStatuses = ["new", "active", "closed"];
 var ContractSchema = new Schema({
   institution: {type: Schema.Types.ObjectId, ref: "Institution", required: true},
   legalNumber: String,
   legalDate: {type: Date, required: false},
-  status: {type: String, enum: contractStatuses, required: true, default: contractStatuses[0]},
-  statusDate: {type: Date, required: true},
   owner: {type: Schema.Types.ObjectId, required: true, ref: "Entity"},
   accounts: {
     gateway: {type: String, required: false, ref: "Account"}
@@ -29,19 +28,12 @@ var ContractSchema = new Schema({
   },
   settlementDayOfMonth: {type: Number, required: true, default: 1, min: 1, max: 28}
 });
+ContractSchema.plugin(statusHistory, {statusList: contractStatuses});
 ContractSchema.index({"institution": 1});
 ContractSchema.index({"productCode": 1});
 ContractSchema.index({"owner": 1});
-ContractSchema.index({"status": 1});
 ContractSchema.index({"legalNumber": 1}, {sparse: true});
 ContractSchema.index({"legalDate": 1}, {sparse: true})
-
-ContractSchema.pre("validate", function (next) {
-  if (this.isNew || this.isModified("status")) {
-    this.statusDate = new Date();
-  }
-  next();
-});
 
 ContractSchema.pre("validate", function (next) {
 
@@ -112,10 +104,11 @@ ContractSchema.pre("save", function(next) {
 
 ContractSchema.statics.closeOperatingDate = function (options, callback) {
   try {
-    assert.ok(options);
-    assert.ok(options.operatingDate);
-    assert.ok(options.institution)
+    assert.ok(options, "You should specify options");
+    assert.ok(options.operatingDate, "You should specify closing operatingDate");
+    assert.ok(options.institution, "You should specify institution");
   } catch(e) {
+    callback = arguments[arguments.length - 1];
     return callback(e);
   }
   var Contract = this;
@@ -151,9 +144,9 @@ ContractSchema.statics.closeOperatingDate = function (options, callback) {
 
 ContractSchema.statics.openOperatingDate = function (options, callback) {
   try {
-    assert.ok(options);
-    assert.ok(options.operatingDate);
-    assert.ok(options.institution)
+    assert.ok(options, "You should specify options");
+    assert.ok(options.operatingDate, "You should specify opening operatingDate");
+    assert.ok(options.institution, "You should specify institution");
   } catch(e) {
     return callback(e);
   }

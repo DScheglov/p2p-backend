@@ -238,6 +238,23 @@ describe("models.Transaction", function (done) {
     })
   });
 
+  it("shouldn't be executed if status doesn't allow this action", function (done) {
+    var T = new Transaction({
+      debitAccount: "001:28091000000002-2809.EUR",
+      creditAccount: "001:26204000000004-2620.EUR",
+      amount: 234,
+      type: "ACCOUNT DEPOSIT",
+      description: "Recharging of the account",
+      status: "new",
+      strictMode: true
+    });
+    T.execute(function (err, _t) {
+      assert.ok(err);
+      assert.equal(err.message, "Transaction status doesn't allow it to be executed.");
+      done();
+    })
+  })
+
   after(function(done) {
     mongoose.connection.db.dropDatabase();
     mongoose.connection.close(done);

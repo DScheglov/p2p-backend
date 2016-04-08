@@ -6,6 +6,7 @@
   "scripts": {
     "test": "NODE_ENV=test istanbul cover _mocha -- -R spec",
     "test-dev": "NODE_ENV=DEVELOPMENT istanbul cover _mocha -- -R spec",
+    "public-test": "sh -x ./pub-cover.sh --debugger",
     "start": "node server.js"
   },
   "keywords": [

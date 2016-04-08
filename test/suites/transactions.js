@@ -253,7 +253,26 @@ describe("models.Transaction", function (done) {
       assert.equal(err.message, "Transaction status doesn't allow it to be executed.");
       done();
     })
-  })
+  });
+
+  it("should be approved", function (done) {
+    var T = new Transaction({
+      debitAccount: "001:28091000000002-2809.EUR",
+      creditAccount: "001:26204000000004-2620.EUR",
+      amount: 234,
+      type: "ACCOUNT DEPOSIT",
+      description: "Recharging of the account",
+      status: "new",
+      strictMode: true
+    });
+    T.approve(function (err, _t) {
+      assert.ok(!err, "Error occured: " + (err&&err.message));
+      assert.ok(_t);
+      assert.equal(T, _t);
+      assert.equal(T.status, "approved");
+      done();
+    })
+  });
 
   after(function(done) {
     mongoose.connection.db.dropDatabase();

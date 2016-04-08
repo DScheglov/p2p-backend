@@ -104,7 +104,7 @@ function preValidate(next) {
 
 function approve(callback) {
   callback = ensureCallback.apply(null, arguments);
-  if (this.verify()) {
+  if (this.status === "new") {
     this.status = "approved";
     return this.save(callback);
   };

@@ -6,6 +6,8 @@ PAGES_COMMIT_MSG="coverage $NOW"
 TMP_DIR="./cvrg"
 CVRG_DIR="./coverage"
 
+npm test
+
 rm $TMP_DIR -rf
 git add .
 git commit -m '"'"$MASTER_COMMIT_MSG"'"'

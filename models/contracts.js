@@ -196,8 +196,8 @@ function openOperatingDateForAll(options, callback) {
 
   function toLog(err, doc) {
     if (err) {
-      return console.error(err);
+      return log.error(err);
     }
-    return console.log("date opened for %s: %s", doc.__t, doc._id);
+    return log.info("date opened for %s: %s", doc.__t, doc._id);
   }
 }

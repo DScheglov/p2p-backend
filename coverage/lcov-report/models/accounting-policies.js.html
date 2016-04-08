@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for models/accounting-policies.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">models/</a> accounting-policies.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">89.74% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>35/39</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">68.75% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>11/16</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>7/7</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>35/35</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">var async = require("async");
+var mongoose = require("mongoose");
+var Schema = mongoose.Schema;
+&nbsp;
+var openOnEnum = ["creation", "acceptance", "first-usage"];
+var accountingProductPolicySchema = new Schema({
+  institution: {type: Schema.Types.ObjectId, required: true, ref: "Institution"},
+  title: {type: String, required: true},
+  description: String,
+  factories: [{
+    accountName: {type: String, required: true},
+    factory: {type: Schema.Types.ObjectId, ref: "AccountFactory", required: true},
+    openOn : {type: String, required: true, enum: openOnEnum, default: openOnEnum[0]}
+  }]
+});
+&nbsp;
+accountingProductPolicySchema.index({"institution": 1});
+accountingProductPolicySchema.statics.ensureAccounts = ensureAccounts;
+&nbsp;
+var AccountingProductPolicy = mongoose.model(
+  "AccountingProductPolicy", accountingProductPolicySchema
+);
+&nbsp;
+// ======================================================================== //
+// Interface
+//
+&nbsp;
+module.exports = exports = {
+  AccountingProductPolicy: AccountingProductPolicy
+};
+&nbsp;
+// ======================================================================== //
+// Implementation
+//
+&nbsp;
+function ensureAccounts(policy, contract, eventOrAccounts, callback) {
+  return this.findById(policy, function (err, p) {
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (err) <span class="cstat-no" title="statement not covered" >return callback(err, contract);</span>
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!p) <span class="cstat-no" title="statement not covered" >return callback(</span>
+      new Error("Product policy was not found."),
+      contract
+    );
+    var Factory = mongoose.model("AccountFactory");
+    var factoryToCall = [];
+    var f;
+    contract.accounts = contract.accounts || <span class="branch-1 cbranch-no" title="branch not covered" >{};</span>
+    var accounts = null;
+    var event = null;
+    var filter = null;
+    if (typeof(eventOrAccounts) === "string") {
+      event = eventOrAccounts;
+      filter = function(f) {
+        return (f.openOn === event) &amp;&amp; (!contract.accounts[f.accountName]);
+      }
+    } else {
+      accounts = eventOrAccounts;
+      filter = function(f) {
+        return (accounts.indexOf(f.accountName) &gt;= 0) &amp;&amp;
+               (!contract.accounts[f.accountName]);
+      }
+    }
+    factoryToCall = p.factories.filter(filter);
+    async.each(factoryToCall, function(f, next) {
+      Factory.openAccount({
+        factory: f.factory,
+        owner: contract.owner,
+        status: "open"
+      }, function(err, account) {
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (err) <span class="cstat-no" title="statement not covered" >return next(err);</span>
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (!account) <span class="cstat-no" title="statement not covered" >return next(</span>
+          new Error("Unable to open account")
+        );
+        contract.accounts[f.accountName] = account;
+        next()
+      })
+    }, function (err) {
+      callback(err, contract);
+    })
+  });
+};
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Apr 08 2016 11:29:50 GMT+0300 (EEST)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

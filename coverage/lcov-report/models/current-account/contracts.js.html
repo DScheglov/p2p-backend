@@ -1,0 +1,956 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for models/current-account/contracts.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../index.html">all files</a> / <a href="index.html">models/current-account/</a> contracts.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">40.82% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>60/147</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">8.7% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>4/46</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">26.92% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>7/26</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">43.28% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>58/134</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">var utils = require("util");
+var assert = require("assert");
+var async = require("async");
+var mongoose = require("mongoose");
+var Schema = mongoose.Schema;
+&nbsp;
+var Contract = require("../contracts").Contract;
+var ensureCallback = require("../tools/ensure").callback;
+var settlements = require('../tools/settlements');
+&nbsp;
+var CurrentAccountProductSchema = require("./products").CurrentAccountProductSchema;
+var tx = require("./transactions");
+&nbsp;
+var CurrentAccountContract = new Schema({
+  product: {type: CurrentAccountProductSchema.options, required: true},
+  accounts: {
+    current: {type: String, ref: "Account"},
+    holds: {type: String, ref: "Account"},
+    interests: {type: String, ref: "Account"}
+  }
+});
+&nbsp;
+CurrentAccountContract.statics.refill = wrapInstanceMethod("refill");
+CurrentAccountContract.methods.refill = refillAccount;
+CurrentAccountContract.statics.withdraw = wrapInstanceMethod("withdraw");
+CurrentAccountContract.methods.withdraw = withdrawAmount;
+CurrentAccountContract.statics.accrueInterests = wrapInstanceMethod("accrueInterests");
+CurrentAccountContract.methods.accrueInterests = accrueInterests;
+CurrentAccountContract.statics.payoutInterests = wrapInstanceMethod("payoutInterests");
+CurrentAccountContract.methods.payoutInterests = payoutInterests;
+CurrentAccountContract.methods.closeOperatingDate = closeOperatingDate;
+CurrentAccountContract.methods.openOperatingDate = openOperatingDate;
+&nbsp;
+// ======================================================================== //
+// Interface
+//
+&nbsp;
+var CurrentAccountContract = Contract.discriminator(
+  "CurrentAccountContract",  CurrentAccountContract
+);
+&nbsp;
+module.exports = exports = {
+  CurrentAccountContract: CurrentAccountContract
+}
+&nbsp;
+// ======================================================================== //
+// Implementation
+//
+&nbsp;
+<span class="fstat-no" title="function not covered" >function refillAccount(options, callback) {</span>
+<span class="cstat-no" title="statement not covered" >  try {</span>
+<span class="cstat-no" title="statement not covered" >    assert.ok(options &amp;&amp; options.amount, "Specify the amount of the refilling.");</span>
+<span class="cstat-no" title="statement not covered" >    assert.ok(options.amount &gt; 0, "The amount of refilling must be greate then 0");</span>
+<span class="cstat-no" title="statement not covered" >    assert.ok(options &amp;&amp; options.tag, "All exposed operations requires the unique tag. Specify tag");</span>
+  } catch(e) {
+<span class="cstat-no" title="statement not covered" >    return callback(e);</span>
+  }
+<span class="cstat-no" title="statement not covered" >  var self = this;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  var t = new tx.CA_Refill({</span>
+    debitAccount: this.product.accounts.incomingGateway,
+    creditAccount: this.accounts.current,
+    amount: options.amount,
+    description: options.description,
+    status: "approved",
+    settlementPeriod: this.settlementPeriod.toObject(),
+    contract: this._id,
+    globalUniqueTag: options.tag
+  });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return t.execute(<span class="fstat-no" title="function not covered" >function (err, t) {</span></span>
+<span class="cstat-no" title="statement not covered" >    if (err) <span class="cstat-no" title="statement not covered" >return callback(err);</span></span>
+<span class="cstat-no" title="statement not covered" >    return self.populate("accounts.current", callback);</span>
+  });
+&nbsp;
+}
+&nbsp;
+<span class="fstat-no" title="function not covered" >function withdrawAmount(options, callback) {</span>
+<span class="cstat-no" title="statement not covered" >  var self = this;</span>
+<span class="cstat-no" title="statement not covered" >  var fee = 0;</span>
+<span class="cstat-no" title="statement not covered" >  var tFee = null;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return async.waterfall([</span>
+    doAssert,
+    calculateFee,
+    transactFee,
+    transact
+  ], <span class="fstat-no" title="function not covered" >function(err) {</span>
+<span class="cstat-no" title="statement not covered" >    if (err) <span class="cstat-no" title="statement not covered" >return rollback_fee(err, callback);</span></span>
+<span class="cstat-no" title="statement not covered" >    return self.populate("accounts.current", callback);</span>
+  });
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function doAssert(next) {</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="cstat-no" title="statement not covered" >      assert.ok(options &amp;&amp; options.amount, "Specify the amount of the withdrawl.");</span>
+<span class="cstat-no" title="statement not covered" >      assert.ok(options.amount &gt; 0, "The amount of withdrawl must be greate then 0");</span>
+<span class="cstat-no" title="statement not covered" >      assert.ok(options.tag, "All exposed operations requires the unique tag. Specify tag");</span>
+    } catch(e) {
+<span class="cstat-no" title="statement not covered" >      return next(e);</span>
+    }
+<span class="cstat-no" title="statement not covered" >    return next();</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function calculateFee(next) {</span>
+<span class="cstat-no" title="statement not covered" >    fee = Math.round(self.product.withdrawlFee * options.amount);</span>
+<span class="cstat-no" title="statement not covered" >    return next();</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function transactFee(next) {</span>
+<span class="cstat-no" title="statement not covered" >    if (fee &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >      tFee = new tx.CA_Withdrawl_Fee({</span>
+        debitAccount: self.accounts.current,
+        creditAccount: self.product.accounts.incomes,
+        amount: fee,
+        status: "approved",
+        globalUniqueTag: options.tag,
+        settlementPeriod: self.settlementPeriod.toObject(),
+        contract: self,
+        strictMode: true
+      });
+<span class="cstat-no" title="statement not covered" >      return tFee.execute(next);</span>
+    }
+<span class="cstat-no" title="statement not covered" >    return next();</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function transact(tFee, next) {</span>
+<span class="cstat-no" title="statement not covered" >    var tWithdraw = new tx.CA_Withdraw({</span>
+      debitAccount: self.accounts.current,
+      creditAccount: self.product.accounts.outgoingGateway,
+      amount: options.amount,
+      description: options.description,
+      status: "approved",
+      globalUniqueTag: options.tag,
+      settlementPeriod: self.settlementPeriod.toObject(),
+      contract: self,
+      strictMode: true
+    });
+<span class="cstat-no" title="statement not covered" >    return tWithdraw.execute(next);</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function rollback_fee(err, next) {</span>
+<span class="cstat-no" title="statement not covered" >    if (!tFee || tFee.status !== "done") <span class="cstat-no" title="statement not covered" >return next(err);</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    tFee.statusDescription = err.message</span>
+<span class="cstat-no" title="statement not covered" >    return tFee.cancel(<span class="fstat-no" title="function not covered" >function(error) {</span></span>
+<span class="cstat-no" title="statement not covered" >      if (error) <span class="cstat-no" title="statement not covered" >return next(</span></span>
+        new Error(err.message + " " + error.message)
+      );
+<span class="cstat-no" title="statement not covered" >      return next(err);</span>
+    });
+  }
+&nbsp;
+}
+&nbsp;
+function accrueInterests(callback) {
+  var self = this;
+  var interests = 0;
+  var iTx = 0;
+&nbsp;
+  callback = ensureCallback.apply(null, arguments);
+&nbsp;
+  return async.waterfall([
+    ensureInterestAccount,
+    refreshCurrentBalance,
+    calculateInterests,
+    transact
+  ], callback);
+&nbsp;
+  function ensureInterestAccount(next) {
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (self.accounts.interests) return next();
+<span class="cstat-no" title="statement not covered" >    var AccountingProductPolicy = mongoose.model("AccountingProductPolicy");</span>
+<span class="cstat-no" title="statement not covered" >    return AccountingProductPolicy.ensureAccounts(</span>
+      self.product.accountingPolicy, self, ["interests"],
+<span class="fstat-no" title="function not covered" >      function(err, account) {</span>
+<span class="cstat-no" title="statement not covered" >        if (err) <span class="cstat-no" title="statement not covered" >return next(err);</span></span>
+<span class="cstat-no" title="statement not covered" >        self.save(next);</span>
+      }
+    );
+  }
+&nbsp;
+  function refreshCurrentBalance(_self, next) {
+    next = ensureCallback.apply(null, arguments);
+    return self.populate("accounts.current", next);
+  }
+&nbsp;
+  function calculateInterests(_self, next) {
+    var base = self.accounts.current.balance;
+    if (!self.product.accrueInterestsOnTheFirstDay) {
+      base -= self.accounts.current.currentCredit;
+    };
+    var rate = self.product.positiveBalanceAPR;
+    interests = Math.round(base * rate / 365);
+    next();
+  }
+&nbsp;
+  function transact(next) {
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (interests === 0) return next();
+<span class="cstat-no" title="statement not covered" >    iTx = new tx.CA_Interests_Acrruing({</span>
+      debitAccount: self.product.accounts.expenses,
+      creditAccount: self.accounts.interests,
+      amount: interests,
+      settlementPeriod: self.settlementPeriod.toObject(),
+      contract: self,
+      status: "approved"
+    });
+<span class="cstat-no" title="statement not covered" >    return iTx.execute(next);</span>
+  }
+&nbsp;
+}
+&nbsp;
+/**
+ * payoutInterests - Pays out accrued Interests by the contract
+ *
+ * @param  {Function} callback function that will be called when method completed
+ * @return {async.promise}
+ */
+<span class="fstat-no" title="function not covered" >function payoutInterests(callback) {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  callback = ensureCallback.apply(null, arguments);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  var self = this;</span>
+<span class="cstat-no" title="statement not covered" >  var interests = 0;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return async.waterfall([</span>
+    refreshInterestsBalance,
+    transact
+  ], callback);
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function refreshInterestsBalance(next) {</span>
+<span class="cstat-no" title="statement not covered" >    if (!self.accounts.interests) <span class="cstat-no" title="statement not covered" >return next();</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    return self.populate("accounts.interests", <span class="fstat-no" title="function not covered" >function (err, _self) {</span></span>
+<span class="cstat-no" title="statement not covered" >      if (err) <span class="cstat-no" title="statement not covered" >return next(err);</span></span>
+<span class="cstat-no" title="statement not covered" >      interests = self.accounts.interests.balance || 0;</span>
+<span class="cstat-no" title="statement not covered" >      return next();</span>
+    })
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  function transact(next) {</span>
+<span class="cstat-no" title="statement not covered" >    if (interests === 0) <span class="cstat-no" title="statement not covered" >return next();</span></span>
+<span class="cstat-no" title="statement not covered" >    var pTx = new tx.CA_Interests_Payout({</span>
+      debitAccount: self.accounts.interests,
+      creditAccount: self.accounts.current,
+      amount: interests,
+      contract: self,
+      status: "approved",
+      settlementPeriod: self.settlementPeriod.toObject(),
+      strictMode: true
+    });
+<span class="cstat-no" title="statement not covered" >    return pTx.execute(next);</span>
+  }
+}
+&nbsp;
+function closeOperatingDate(options, callback) {
+  return this.accrueInterests(callback);
+}
+&nbsp;
+<span class="fstat-no" title="function not covered" >function openOperatingDate(options, callback) {</span>
+<span class="cstat-no" title="statement not covered" >  try {</span>
+<span class="cstat-no" title="statement not covered" >    assert.ok(options, "Specify options");</span>
+<span class="cstat-no" title="statement not covered" >    assert.ok(options.operatingDate, "Specify new operatingDate in options");</span>
+  } catch(e) {
+<span class="cstat-no" title="statement not covered" >    return callback(e);</span>
+  }
+<span class="cstat-no" title="statement not covered" >  if (+options.operatingDate &gt; +this.settlementPeriod.end) {</span>
+<span class="cstat-no" title="statement not covered" >    settlements.nextPeriod.call(this.settlementPeriod);</span>
+<span class="cstat-no" title="statement not covered" >    this.save(<span class="fstat-no" title="function not covered" >function (err, _self) {</span></span>
+<span class="cstat-no" title="statement not covered" >      if (err) <span class="cstat-no" title="statement not covered" >return callback(err);</span></span>
+<span class="cstat-no" title="statement not covered" >      return _self.payoutInterests(callback);</span>
+    });
+&nbsp;
+  }
+<span class="cstat-no" title="statement not covered" >  return callback();</span>
+}
+&nbsp;
+function wrapInstanceMethod(method) {
+  return <span class="fstat-no" title="function not covered" >function (options, callback) {</span>
+<span class="cstat-no" title="statement not covered" >    var Contract = mongoose.model("CurrentAccountContract");</span>
+<span class="cstat-no" title="statement not covered" >    var q = {};</span>
+<span class="cstat-no" title="statement not covered" >    options = utils._extend({}, options);</span>
+<span class="cstat-no" title="statement not covered" >    if (options.id) {</span>
+<span class="cstat-no" title="statement not covered" >      q._id = options._id;</span>
+<span class="cstat-no" title="statement not covered" >      delete options._id;</span>
+    }
+    else <span class="cstat-no" title="statement not covered" >if (options.legalNumber) {</span>
+<span class="cstat-no" title="statement not covered" >      q.legalNumber = options.legalNumber;</span>
+<span class="cstat-no" title="statement not covered" >      delete options.legalNumber;</span>
+    }
+<span class="cstat-no" title="statement not covered" >    Contract.findOne(q, <span class="fstat-no" title="function not covered" >function(err, contract) {</span></span>
+<span class="cstat-no" title="statement not covered" >      if (err) <span class="cstat-no" title="statement not covered" >return callback(err, null);</span></span>
+<span class="cstat-no" title="statement not covered" >      if (!contract) <span class="cstat-no" title="statement not covered" >return callback(</span></span>
+        new Error("Contract was not flound")
+      );
+<span class="cstat-no" title="statement not covered" >      return contract[method](options, callback);</span>
+    })
+  }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Apr 08 2016 11:29:50 GMT+0300 (EEST)
+</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

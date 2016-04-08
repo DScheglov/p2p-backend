@@ -11,4 +11,7 @@ db.once('open', function callback () {
   log.info("Connected to DB!");
 });
 
-module.exports.db = db;
+module.exports = {
+  db: db,
+  models: require('./models')
+};

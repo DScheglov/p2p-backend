@@ -1,8 +1,8 @@
-var Contract = require('../models/contracts').Contract;
+var models = require('../models').models;
 
 module.exports = exports = function (ModelAPI) {
 
-  ModelAPI.expose(Contract, {
+  ModelAPI.expose(models.Contract, {
     searchMethod: 'GET',
     exposeStatic: {
       "*": true

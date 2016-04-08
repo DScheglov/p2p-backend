@@ -1,8 +1,8 @@
-var transactions = require('../models/transactions');
+var models = require('../models').models;
 
 module.exports = exports = function (ModelAPI) {
 
-  Transaction: ModelAPI.expose(transactions.Transaction, {
+  Transaction: ModelAPI.expose(models.Transaction, {
     searchMethod: 'GET',
     expose: {
       "*": true

@@ -2,6 +2,7 @@ var assert = require('assert');
 var utils = require('util');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var log = require('../lib/logger')(module);
 
 var ActiveInactive = ['inactive', 'active'];
 
@@ -10,12 +11,6 @@ var InstitutionSchema = new Schema({
   country: {type: String, required: true},
   code: {type: String, required: true},
   status: {type: String, enum: ActiveInactive, default: ActiveInactive[0], required: true},
-  accounts : {
-    incomes: {type: String, required: false, ref: "Account"},
-    expenses: {type: String, required: false, ref: "Account"},
-    current: {type: String, required: false, ref: "Account"}
-  },
-  accountingPolicy: {type: Schema.Types.ObjectId, required: false, ref: "AccountingPolicy"},
   operatingDate: {type: Date, required: false},
   closedOperatingDate: {type: Date, required: false}
 });
@@ -23,10 +18,23 @@ InstitutionSchema.index({"country": 1});
 InstitutionSchema.index({"code": 1}, {"unique": true});
 InstitutionSchema.index({"status": 1});
 
-InstitutionSchema.methods.closeOperatingDate = function(options, callback) {
+InstitutionSchema.methods.closeOperatingDate = closeOperatingDate;
+InstitutionSchema.methods.openOperatingDate = openOperatingDate;
+
+// ======================================================================== //
+// Interface
+//
+
+module.exports = exports = {
+  Institution: mongoose.model("Institution", InstitutionSchema)
+};
+
+// ======================================================================== //
+// Implementation
+//
+
+function closeOperatingDate(options, callback) {
   var self = this;
-  var contractsProcessed = false;
-  var accountsProcessed = false;
   var totals = {};
 
   var options = {
@@ -36,8 +44,7 @@ InstitutionSchema.methods.closeOperatingDate = function(options, callback) {
 
   mongoose.model("Contract").closeOperatingDate(options, function(err, res) {
     if (err) return callback(err);
-    contractsProcessed = true;
-    console.dir(res);
+    log.info(res);
     utils._extend(totals, res);
     closeForAccounts();
   });
@@ -45,27 +52,24 @@ InstitutionSchema.methods.closeOperatingDate = function(options, callback) {
   function closeForAccounts() {
     mongoose.model("Account").closeOperatingDate(options, function(err, res) {
       if (err) return callback(err);
-      accountsProcessed = true;
-      console.dir(res);
+      log.info(res);
       utils._extend(totals, res);
       done();
     });
   }
 
   function done() {
-    if (contractsProcessed && accountsProcessed) {
-      self.closedOperatingDate = self.operatingDate;
-      self.operatingDate = null;
-      self.save(function(err, _self) {
-        totals.institution = _self;
-        return callback(err, totals);
-      });
-    }
+    self.closedOperatingDate = self.operatingDate;
+    self.operatingDate = null;
+    self.save(function(err, _self) {
+      totals.institution = _self;
+      return callback(err, totals);
+    });
   }
 
 }
 
-InstitutionSchema.methods.openOperatingDate = function(options, callback) {
+function openOperatingDate(options, callback) {
   try {
     assert.ok(this.closedOperatingDate, "You have to close current date");
     assert.ok(!this.operatingDate, "You have to close current date");
@@ -87,17 +91,10 @@ InstitutionSchema.methods.openOperatingDate = function(options, callback) {
     mongoose.model("Contract").openOperatingDate(options, function(err, res) {
       if (err) return callback(err);
       contractsProcessed = true;
-      console.dir(res);
+      log.info(res);
       res.institution = _self;
       callback(null, res);
     });
   });
 
 }
-
-
-var Institution = mongoose.model("Institution", InstitutionSchema);
-
-module.exports = exports = {
-  Institution: Institution
-};

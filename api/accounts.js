@@ -1,9 +1,10 @@
-var accounts = require('../models/accounts');
+var models = require('../models').models;
+
 module.exports = exports = function (ModelAPI) {
-  ModelAPI.expose(accounts.Account, {
+  ModelAPI.expose(models.Account, {
     searchMethod: 'GET'
   });
-  ModelAPI.expose(accounts.AccountFactory, {
+  ModelAPI.expose(models.AccountFactory, {
     searchMethod: 'GET',
     plural: "AccountFactories",
     exposeStatic: {

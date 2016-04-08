@@ -33,8 +33,9 @@ function statusHistory(schema, options) {
   });
 
   schema.pre("validate", function(next) {
+    var newStatusDate = new Date();
+
     if (this.isNew || this.isModified("status")) {
-      var newStatusDate = new Date();
       if (this.statusDate) {
         this.statusHistory.push({
           status: this.__prevStatus,
@@ -43,6 +44,8 @@ function statusHistory(schema, options) {
         });
       };
       this.statusDate = newStatusDate;
+    } else {
+      this.statusDate = this.statusDate || newStatusDate;
     }
     next();
   });

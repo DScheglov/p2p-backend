@@ -1,14 +1,14 @@
+
 var async = require("async")
 var assert = require('assert');
 var mongoose = require('mongoose');
 var Institution = require('../../models/institutions').Institution;
-var accounts = require('../../models/accounts');
 var Entity = require('../../models/entities').Entity;
 var ProductPolicy = require('../../models/accounting-policies').AccountingProductPolicy;
 var Product = require('../../models/products').Product;
 var Contract = require('../../models/contracts').Contract;
-var Account = accounts.Account;
-var AccountFactory = accounts.AccountFactory;
+var Account = require('../../models/accounts').Account;
+var AccountFactory = require('../../models/account-factories').AccountFactory;
 
 var fixtures = {
   institutions: require('../fixtures/institutions'),
@@ -20,7 +20,7 @@ var fixtures = {
   contracts: require('../fixtures/contracts')
 }
 
-describe("model.Contract", function () {
+describe("models.Contract", function () {
 
   before(function (done) {
     var dbName = "temp_db_" + mongoose.Types.ObjectId().toString();
@@ -103,10 +103,14 @@ describe("model.Contract", function () {
   });
 
   it("should provide void settlement at closeOperatingDate event for contracts", function(done) {
-    Contract.closeOperatingDate({
-      operatingDate : fixtures.institutions[0].operatingDate,
-      institution: fixtures.institutions[0]
-    }, function(err, results) {
+
+    async.waterfall([
+      Contract.remove.bind(Contract, {__t: {$ne: "Contract"}}),
+      Contract.closeOperatingDate.bind(Contract, {
+        operatingDate : fixtures.institutions[0].operatingDate,
+        institution: fixtures.institutions[0]
+      })
+    ], function(err, results) {
       assert.ok(!err, "Error occured: " + (err&&err.message));
       assert.ok(results);
       assert.equal(results.contracts, 0);

@@ -2,32 +2,6 @@ var async = require("async");
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
-var policySchema = new Schema({
-  title: {type: String, required: true},
-  description: String,
-  institution : {type: Schema.Types.ObjectId, ref: "Institution", required: true},
-  factories: {
-    institution: {
-      incomes: {type: Schema.Types.ObjectId, required: false, ref: "AccountFactory"},
-      expenses: {type: Schema.Types.ObjectId, required: false, ref: "AccountFactory"},
-      current: {type: Schema.Types.ObjectId, required: false, ref: "AccountFactory"},
-    },
-    legalEntity: {
-      payables: {type: Schema.Types.ObjectId, required: false, ref: "AccountFactory"},
-      receivables: {type: Schema.Types.ObjectId, required: false, ref: "AccountFactory"}
-    },
-    privateIndividual: {
-      current: {type: Schema.Types.ObjectId, required: false, ref: "AccountFactory"}
-    },
-    contract: {
-      gateway: {type: Schema.Types.ObjectId, required: false, ref: "AccountFactory"}
-    }
-  }
-});
-policySchema.index({"institution": true});
-
-var AccountingPolicy = mongoose.model("AccountingPolicy", policySchema);
-
 var openOnEnum = ["creation", "acceptance", "first-usage"];
 var accountingProductPolicySchema = new Schema({
   institution: {type: Schema.Types.ObjectId, required: true, ref: "Institution"},
@@ -41,8 +15,24 @@ var accountingProductPolicySchema = new Schema({
 });
 
 accountingProductPolicySchema.index({"institution": 1});
-
 accountingProductPolicySchema.statics.ensureAccounts = ensureAccounts;
+
+var AccountingProductPolicy = mongoose.model(
+  "AccountingProductPolicy", accountingProductPolicySchema
+);
+
+// ======================================================================== //
+// Interface
+//
+
+module.exports = exports = {
+  AccountingProductPolicy: AccountingProductPolicy
+};
+
+// ======================================================================== //
+// Implementation
+//
+
 function ensureAccounts(policy, contract, eventOrAccounts, callback) {
   return this.findById(policy, function (err, p) {
     if (err) return callback(err, contract);
@@ -87,13 +77,4 @@ function ensureAccounts(policy, contract, eventOrAccounts, callback) {
       callback(err, contract);
     })
   });
-};
-
-var AccountingProductPolicy = mongoose.model(
-  "AccountingProductPolicy", accountingProductPolicySchema
-);
-
-module.exports = exports = {
-  AccountingPolicy: AccountingPolicy,
-  AccountingProductPolicy: AccountingProductPolicy
 };

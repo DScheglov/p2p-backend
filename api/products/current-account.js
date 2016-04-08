@@ -1,7 +1,7 @@
-var models = require('../../models/current-account');
+var models = require('../../models/').models;
 
 module.exports = exports = function (ModelAPI) {
-  var ContractAPI = ModelAPI.expose(models.Contract, {
+  var ContractAPI = ModelAPI.expose(models.currentAccountContract, {
     searchMethod: 'GET',
     plural: "CurrentAccountContracts",
     expose: {
@@ -17,7 +17,7 @@ module.exports = exports = function (ModelAPI) {
     listPopulate: "accounts.currrent",
     populate: "accounts.current accounts.interests"
   });
-  var ProductAPI = ModelAPI.expose(models.Product, {
+  var ProductAPI = ModelAPI.expose(models.currentAccountProduct, {
     searchMethod: 'GET',
     plural: "CurrentAccountProducts"
   });

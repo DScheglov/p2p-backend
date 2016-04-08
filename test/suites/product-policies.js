@@ -4,9 +4,8 @@ var mongoose = require('mongoose');
 var Institution = require('../../models/institutions').Institution;
 var Entity = require('../../models/entities').Entity;
 var ProductPolicy = require('../../models/accounting-policies').AccountingProductPolicy;
-var accounts = require('../../models/accounts');
-var Factory = accounts.AccountFactory;
-var Account = accounts.Account;
+var Factory = require('../../models/account-factories').AccountFactory;
+var Account = require('../../models/accounts').Account;
 var fixtures = {
   institutions: require('../fixtures/institutions'),
   factories: require('../fixtures/factories'),

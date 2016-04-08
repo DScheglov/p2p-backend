@@ -3,8 +3,8 @@ var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 var SettlementPeriodSchema = require("./tools/settlements").SettlementPeriodSchema;
-var ensureCallback = require("./tools/safe-callback").ensureCallback;
-var ensureId = require("./tools/ensure-id");
+var ensureCallback = require("./tools/ensure").callback;
+var ensureId = require("./tools/ensure").id;
 
 var transStatuses = ["new", "approved", "pending", "applied", "canceling", "done", "failed", "canceled"];
 
@@ -40,7 +40,26 @@ TransactionSchema.index({"operatingDate": 1});
 TransactionSchema.index({"globalUniqueTag": 1}, {unique: true, sparse: true});
 TransactionSchema.index({"contract":1}, {sparse: true});
 
-TransactionSchema.pre('validate', function (next) {
+TransactionSchema.pre('validate', preValidate);
+
+TransactionSchema.methods.approve = approve;
+TransactionSchema.methods.cancel = cancel;
+TransactionSchema.methods.execute = execute;
+TransactionSchema.methods.approveAndExecute = approveAndExecute;
+
+// ======================================================================== //
+// Interface
+//
+
+module.exports = exports = {
+  Transaction: mongoose.model("Transaction", TransactionSchema)
+};
+
+// ======================================================================== //
+// Implementation
+//
+
+function preValidate(next) {
 
   if (!this.isNew) return next(); // Don't do for old transactions
 
@@ -81,13 +100,9 @@ TransactionSchema.pre('validate', function (next) {
     self.operatingDate = self.institution.operatingDate;
     next();
   });
-});
-
-TransactionSchema.methods.verify = function() {
-  return true;
 }
 
-TransactionSchema.methods.approve = function(callback) {
+function approve(callback) {
   callback = ensureCallback.apply(null, arguments);
   if (this.verify()) {
     this.status = "approved";
@@ -95,7 +110,7 @@ TransactionSchema.methods.approve = function(callback) {
   };
 };
 
-TransactionSchema.methods.cancel = function(callback) {
+function cancel(callback) {
   var tx = this;
   callback = ensureCallback.apply(null, arguments);
   if (tx.status !== 'done') return callback(
@@ -138,7 +153,7 @@ TransactionSchema.methods.cancel = function(callback) {
 
 }
 
-TransactionSchema.methods.execute = function (callback) {
+function execute(callback) {
   var Account = mongoose.model('Account');
   var tx = this;
 
@@ -295,18 +310,12 @@ TransactionSchema.methods.execute = function (callback) {
       }
     );
   };
-};
+}
 
-TransactionSchema.methods.approveAndExecute = function(callback) {
+function approveAndExecute(callback) {
   var self = this;
   return self.approve(function(err) {
     if (err) return callback(err);
       self.execute(callback);
   })
-};
-
-var Transaction = mongoose.model("Transaction", TransactionSchema);
-
-module.exports = exports = {
-  Transaction: Transaction
-};
+}

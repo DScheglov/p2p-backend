@@ -1,12 +1,7 @@
-var policies = require('../models/accounting-policies');
-var Policy = policies.AccountingPolicy;
-var productPolicy = policies.AccountingProductPolicy;
+var models = require('../models/').models;
 
 module.exports = exports = function (ModelAPI) {
-  ModelAPI.expose(Policy, {
-    searchMethod: 'GET'
-  });
-  ModelAPI.expose(productPolicy, {
+  ModelAPI.expose(models.AccountingProductPolicy, {
     searchMethod: 'GET',
     plural: "ProductPolicies"
   });

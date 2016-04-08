@@ -1,10 +1,7 @@
 var express = require('express');
 var bodyParser = require("body-parser");
 var methodOverride = require("method-override");
-var morgan = require("morgan");
-var serveStatic = require('serve-static');
 var path = require('path');
-
 
 var app = express();
 var log = require("./lib/logger")(module);
@@ -12,8 +9,8 @@ var instHeader = require('./lib/institution-header');
 var db = require("./models/index").db;
 var ModelAPI = require('./api')(app);
 
-app.use(morgan('combined')); // выводим все запросы со статусами в консоль
-app.use(bodyParser.json()); // стандартный модуль, для парсинга JSON в запросах
+app.use(require('./lib/logger')(module, true));
+app.use(bodyParser.json());
 app.use(methodOverride('X-HTTP-Method-Override')); // поддержка put и delete
 app.use("/api/v1", instHeader);
 ModelAPI.implement();

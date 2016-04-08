@@ -3,13 +3,14 @@ var assert = require("assert");
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
-var ProductSchema = require("./products").ProductSchema.options;
+var ProductSchema = require("./products").Product.schema.options;
 var settlements = require("./tools/settlements");
 var SettlementPeriodSchema = settlements.SettlementPeriodSchema;
 var defineSP = settlements.define;
-var ensureId = require("./tools/ensure-id");
-var ensureCallback = require("./tools/safe-callback").ensureCallback;
+var ensureId = require("./tools/ensure").id;
+var ensureCallback = require("./tools/ensure").callback;
 var statusHistory = require("./plugins/status-history");
+var log = require("../lib/logger")(module);
 
 var contractStatuses = ["new", "active", "closed"];
 var ContractSchema = new Schema({
@@ -29,13 +30,34 @@ var ContractSchema = new Schema({
   settlementDayOfMonth: {type: Number, required: true, default: 1, min: 1, max: 28}
 });
 ContractSchema.plugin(statusHistory, {statusList: contractStatuses});
+
 ContractSchema.index({"institution": 1});
 ContractSchema.index({"productCode": 1});
 ContractSchema.index({"owner": 1});
 ContractSchema.index({"legalNumber": 1}, {sparse: true});
 ContractSchema.index({"legalDate": 1}, {sparse: true})
 
-ContractSchema.pre("validate", function (next) {
+ContractSchema.pre("validate", preValidate);
+ContractSchema.pre("save", preSave);
+
+ContractSchema.statics.closeOperatingDate = closeOperatingDateForAll;
+ContractSchema.statics.openOperatingDate = openOperatingDateForAll;
+
+var Contract = mongoose.model("Contract", ContractSchema);
+
+// ======================================================================== //
+// Interface
+//
+
+module.exports = exports = {
+  Contract: Contract
+}
+
+// ======================================================================== //
+// Implementation
+//
+
+function preValidate(next) {
 
   if (this.product) return next();
   var self = this;
@@ -51,9 +73,9 @@ ContractSchema.pre("validate", function (next) {
     self.product = p.toObject();
     next();
   });
-});
+}
 
-ContractSchema.pre("save", function(next) {
+function preSave(next) {
   var event = null;
   var self = this;
   var actions = [];
@@ -100,9 +122,10 @@ ContractSchema.pre("save", function(next) {
     );
   }
 
-});
+}
 
-ContractSchema.statics.closeOperatingDate = function (options, callback) {
+function closeOperatingDateForAll(options, callback) {
+  callback = ensureCallback.apply(null, arguments);
   try {
     assert.ok(options, "You should specify options");
     assert.ok(options.operatingDate, "You should specify closing operatingDate");
@@ -136,13 +159,13 @@ ContractSchema.statics.closeOperatingDate = function (options, callback) {
 
   function toLog(err, doc) {
     if (err) {
-      return console.error(err);
+      return log.error(err);
     }
-    return console.log("date closed for %s: %s", doc.__t, doc._id);
+    return log.info("date closed for %s: %s", doc.__t, doc._id.toString());
   }
 }
 
-ContractSchema.statics.openOperatingDate = function (options, callback) {
+function openOperatingDateForAll(options, callback) {
   try {
     assert.ok(options, "You should specify options");
     assert.ok(options.operatingDate, "You should specify opening operatingDate");
@@ -177,10 +200,4 @@ ContractSchema.statics.openOperatingDate = function (options, callback) {
     }
     return console.log("date opened for %s: %s", doc.__t, doc._id);
   }
-}
-
-var Contract = mongoose.model("Contract", ContractSchema);
-
-module.exports = exports = {
-  Contract: Contract
 }

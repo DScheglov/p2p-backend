@@ -8,3 +8,4 @@ require('./suites/transactions');
 require('./suites/product-policies');
 require('./suites/products');
 require('./suites/contracts');
+require('./suites/closing-date');

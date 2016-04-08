@@ -22,8 +22,21 @@ ProductSchema.index({"institution": 1, "code": 1}, {unique: 1});
 ProductSchema.index({"institution": 1, "category": 1});
 ProductSchema.index({"tags": 1}, {sparse: true});
 
+ProductSchema.post("save", preSave);
 
-ProductSchema.post("save", function(p) {
+// ======================================================================== //
+// Interface
+//
+
+module.exports = exports = {
+  Product: mongoose.model("Product", ProductSchema)
+};
+
+// ======================================================================== //
+// Implementation
+//
+
+function preSave(p) {
   var Contract = mongoose.model("Contract");
   return Contract.update({
     institution: p.institution,
@@ -34,11 +47,4 @@ ProductSchema.post("save", function(p) {
       product: p.toObject()
     }
   }, {multi: true}).exec();
-});
-
-var Product = mongoose.model("Product", ProductSchema);
-
-module.exports = exports = {
-  Product: Product,
-  ProductSchema: ProductSchema
-};
+}

@@ -2,6 +2,7 @@ var async = require("async")
 var assert = require('assert');
 var mongoose = require('mongoose');
 var Institution = require('../../models/institutions').Institution;
+var DailyBalance = require('../../models/daily-balances').DailyBalance;
 var accounts = require('../../models/accounts');
 var Account = accounts.Account;
 var fixtures = {
@@ -121,6 +122,7 @@ describe("models.Account", function (done) {
 
   it("should provide settlement at closeOperatingDate event for accounts", function(done) {
     var accounts = 0;
+    var DailyBalance = mongoose.model("DailyBalance");
     async.waterfall([
       Account.count.bind(Account, {
         status: "open",
@@ -128,15 +130,25 @@ describe("models.Account", function (done) {
       }),
       function (count, next) {
         accounts = count;
-        return Account.closeOperatingDate({
-          operatingDate : fixtures.institutions[0].operatingDate,
-          institution: fixtures.institutions[0]
-        }, next);
-      }
+        return next();
+      },
+      Account.closeOperatingDate.bind(Account, {
+        operatingDate : fixtures.institutions[0].operatingDate,
+        institution: fixtures.institutions[0]
+      }),
+      function(results, next) {
+        assert.ok(results);
+        assert.equal(results.accounts, accounts);
+        next();
+      },
+      DailyBalance.find.bind(DailyBalance, {
+        operatingDate : fixtures.institutions[0].operatingDate,
+        institution: fixtures.institutions[0]
+      })
     ], function(err, results) {
       assert.ok(!err, "Error occured: " + (err&&err.message));
       assert.ok(results);
-      assert.equal(results.accounts, accounts);
+      assert.equal(results.length, accounts);
       done();
     });
 

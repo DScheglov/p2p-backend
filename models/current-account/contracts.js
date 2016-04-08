@@ -5,7 +5,7 @@ var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 var Contract = require("../contracts").Contract;
-var ensureCallback = require("../tools/safe-callback").ensureCallback;
+var ensureCallback = require("../tools/ensure").callback;
 var settlements = require('../tools/settlements');
 
 var CurrentAccountProductSchema = require("./products").CurrentAccountProductSchema;
@@ -30,6 +30,22 @@ CurrentAccountContract.statics.payoutInterests = wrapInstanceMethod("payoutInter
 CurrentAccountContract.methods.payoutInterests = payoutInterests;
 CurrentAccountContract.methods.closeOperatingDate = closeOperatingDate;
 CurrentAccountContract.methods.openOperatingDate = openOperatingDate;
+
+// ======================================================================== //
+// Interface
+//
+
+var CurrentAccountContract = Contract.discriminator(
+  "CurrentAccountContract",  CurrentAccountContract
+);
+
+module.exports = exports = {
+  CurrentAccountContract: CurrentAccountContract
+}
+
+// ======================================================================== //
+// Implementation
+//
 
 function refillAccount(options, callback) {
   try {
@@ -278,12 +294,4 @@ function wrapInstanceMethod(method) {
       return contract[method](options, callback);
     })
   }
-}
-
-var CurrentAccountContract = Contract.discriminator(
-  "CurrentAccountContract",  CurrentAccountContract
-);
-
-module.exports = exports = {
-  CurrentAccountContract: CurrentAccountContract
 }

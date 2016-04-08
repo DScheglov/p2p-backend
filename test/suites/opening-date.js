@@ -10,7 +10,7 @@ var fixtures = {
   contracts: require('../fixtures/contracts')
 }
 
-describe("Institution.closeOperatingDate", function (done) {
+describe("Institution.openOperatingDate", function (done) {
 
   before(function (done) {
     var dbName = "temp_db_"+mongoose.Types.ObjectId().toString();
@@ -29,9 +29,11 @@ describe("Institution.closeOperatingDate", function (done) {
     ], done);
   });
 
-  it("should process close date operations", function(done) {
-    var institution;
+  it("should process close date operations and then open new date", function(done) {
+    var institution = null;
     var expClosedDate = new Date(fixtures.institutions[0].operatingDate);
+    var expOpenDate = new Date(expClosedDate);
+    expOpenDate.setUTCDate(expOpenDate.getUTCDate()+1);
     async.waterfall([
       models.Institution.findById.bind(
         models.Institution,
@@ -39,19 +41,32 @@ describe("Institution.closeOperatingDate", function (done) {
       ),
       function(_institution) {
         institution = _institution;
-        assert.ok(institution);
         var next = arguments[arguments.length-1];
         institution.closeOperatingDate({}, next)
+      },
+      function (results) {
+        var next = arguments[arguments.length-1];
+        assert.ok(results);
+        // 3 - the nuber of CurrentAccountContracts in the fixtures
+        assert.equal(results.contracts, 3);
+        assert.equal(results.accounts, fixtures.accounts.length);
+        assert.ok(institution.closedOperatingDate);
+        assert.equal(institution.closedOperatingDate.toISOString(), expClosedDate.toISOString());
+        assert.ok(!institution.operatingDate);
+        next();
+      },
+      function() {
+        var next = arguments[arguments.length-1];
+        institution.openOperatingDate({}, next)
       }
     ], function (err, results) {
       assert.ok(!err, "Error occured: " + (err&&err.message));
       assert.ok(results);
       // 3 - the nuber of CurrentAccountContracts in the fixtures
       assert.equal(results.contracts, 3);
-      assert.equal(results.accounts, fixtures.accounts.length);
-      assert.ok(institution.closedOperatingDate);
-      assert.equal(institution.closedOperatingDate.toISOString(), expClosedDate.toISOString());
-      assert.ok(!institution.operatingDate);
+      assert.ok(!results.accounts);
+      assert.ok(institution.operatingDate);
+      assert.equal(institution.operatingDate.toISOString(), expOpenDate.toISOString());
       done();
     });
   });

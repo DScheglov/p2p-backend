@@ -50,7 +50,7 @@ module.exports = exports = {
 function refillAccount(options, callback) {
   try {
     assert.ok(options && options.amount, "Specify the amount of the refilling.");
-    assert.ok(options.amount > 0, "The amount of refilling must be greate then 0");
+    assert.ok(options.amount > 0, "The amount of refilling must be greater then 0");
     assert.ok(options && options.tag, "All exposed operations requires the unique tag. Specify tag");
   } catch(e) {
     return callback(e);

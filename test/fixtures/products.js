@@ -91,6 +91,34 @@ module.exports = exports = [{
     ],
     "title" : "Investor Account of Legal Entities",
     "withdrawlFee" : 0.01
+  }, {
+    "__t" : "CurrentAccountProduct",
+    "accountingPolicy" : ObjectId("56e28f9072275316068bb187"),
+    "accounts" : {
+      "incomingGateway" : "001:28090000000001-2809.EUR",
+      "outgoingGateway" : "001:29091000000001-2909.EUR",
+      "incomes" : "001:60007000000001-6000.EUR",
+      "expenses" : "001:70009000000002-7000.EUR"
+    },
+    "accrueInterestsOnTheFirstDay" : true,
+    "active" : {
+      "from" : ISODate("2016-03-11T08:55:09.774Z")
+    },
+    "category" : "IA/LE",
+    "code" : "PI_CA.111",
+    "description" : "...",
+    "institution" : ObjectId("56d481db3a4c513a1addd11a"),
+    "positiveBalanceAPR" : 0.12,
+    "productParams" : {
+
+    },
+    "status" : "active",
+    "statusDate" : ISODate("2016-03-11T08:55:09.774Z"),
+    "tags" : [
+      "INVESTORS ACCOUNTS"
+    ],
+    "title" : "Investor Account of Private Individual",
+    "withdrawlFee" : 0.00
   }
 
 ];

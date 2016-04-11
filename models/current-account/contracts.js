@@ -90,7 +90,8 @@ function withdrawAmount(options, callback) {
     return self.populate("accounts.current", callback);
   });
 
-  function doAssert(next) {
+  function doAssert() {
+    var next = ensureCallback.apply(null, arguments);
     try {
       assert.ok(options && options.amount, "Specify the amount of the withdrawl.");
       assert.ok(options.amount > 0, "The amount of withdrawl must be greate then 0");
@@ -101,12 +102,14 @@ function withdrawAmount(options, callback) {
     return next();
   }
 
-  function calculateFee(next) {
+  function calculateFee() {
+    var next = ensureCallback.apply(null, arguments);
     fee = Math.round(self.product.withdrawlFee * options.amount);
     return next();
   }
 
-  function transactFee(next) {
+  function transactFee() {
+    var next = ensureCallback.apply(null, arguments);
     if (fee > 0) {
       tFee = new tx.CA_Withdrawl_Fee({
         debitAccount: self.accounts.current,
@@ -123,7 +126,8 @@ function withdrawAmount(options, callback) {
     return next();
   }
 
-  function transact(tFee, next) {
+  function transact(tFee) {
+    var next = ensureCallback.apply(null, arguments);
     var tWithdraw = new tx.CA_Withdraw({
       debitAccount: self.accounts.current,
       creditAccount: self.product.accounts.outgoingGateway,
@@ -138,7 +142,8 @@ function withdrawAmount(options, callback) {
     return tWithdraw.execute(next);
   }
 
-  function rollback_fee(err, next) {
+  function rollback_fee(err) {
+    var next = ensureCallback.apply(null, arguments);
     if (!tFee || tFee.status !== "done") return next(err);
 
     tFee.statusDescription = err.message

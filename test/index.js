@@ -10,3 +10,4 @@ require('./suites/products');
 require('./suites/contracts');
 require('./suites/closing-date');
 require('./suites/opening-date');
+require('./suites/current-account/contracts');

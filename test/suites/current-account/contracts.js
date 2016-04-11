@@ -210,6 +210,104 @@ describe("models.currentAccountContract", function (done) {
     });
   });
 
+  it("sholud be failed to withdraw even a fee rollback", function(done) {
+    var caContract = models.currentAccountContract;
+    var contract;
+    var amountToRefill = 5000;
+    var theBalance = 0;
+    var amountToWithdraw = 0;
+
+    var Q = caContract.findOne({status: "active"});
+    async.waterfall([
+      Q.exec.bind(Q),
+      function (_contract) {
+        contract = _contract;
+        assert.ok(contract, "No Current Account Contract was found.")
+        var next = arguments[arguments.length - 1];
+        contract.refill({
+          amount: amountToRefill,
+          tag: "test:9",
+          description: "Test refilling"
+        }, next);
+      },
+      function () {
+        var next = arguments[arguments.length-1];
+        theBalance = contract.accounts.current.balance;
+        amountToWithdraw = 10*Math.round(theBalance / contract.product.withdrawlFee);
+        contract.withdraw({
+          amount: amountToWithdraw,
+          tag: "test:10",
+          description: "Test withdrawing"
+        }, next);
+      }
+    ], function (err) {
+      assert.ok(err);
+      assert.equal(err.message, "Negative balance of debitAccount");
+      assert.equal(contract.accounts.current.balance, theBalance);
+      var Tx = mongoose.model("tx_CA_Withdrawl_Fee");
+      var Q = Tx.findOne({globalUniqueTag:"CURRENT_ACCOUNTS/FEES/WITHDRAWL:test:10"});
+      var expFee = Math.round(amountToWithdraw * contract.product.withdrawlFee);
+      Q.exec(function (err, tx) {
+        assert.ok(!err, "Error occured: " + (err&&err.message));
+        assert.ok(tx);
+        assert.equal(tx.amount, expFee);
+        assert.equal(tx.status, "failed");
+        assert.equal(tx.statusDescription, "Negative balance of debitAccount")
+        done();
+      })
+    });
+  });
+
+  it("sholud be failed to withdraw without fee (and w/o rollback)", function(done) {
+    var caContract = models.currentAccountContract;
+    var contract;
+    var amountToRefill = 5000;
+    var theBalance = 0;
+    var amountToWithdraw = 0;
+
+    var contract = new caContract({
+      institution: fixtures.entities[0].institution,
+      owner: fixtures.entities[0]._id,
+      productCode: "PI_CA.111",
+      status: "active"
+    });
+    async.waterfall([
+      contract.save.bind(contract),
+      function (_contract) {
+        assert.ok(contract, "No Current Account Contract was found.")
+        assert.equal(contract, _contract);
+        var next = arguments[arguments.length - 1];
+        contract.refill({
+          amount: amountToRefill,
+          tag: "test:11",
+          description: "Test refilling"
+        }, next);
+      },
+      function () {
+        var next = arguments[arguments.length-1];
+        theBalance = contract.accounts.current.balance;
+        amountToWithdraw = theBalance * 10;
+        contract.withdraw({
+          amount: amountToWithdraw,
+          tag: "test:12",
+          description: "Test withdrawing"
+        }, next);
+      }
+    ], function (err) {
+      assert.ok(err);
+      assert.equal(err.message, "Negative balance of debitAccount");
+      assert.equal(contract.accounts.current.balance, theBalance);
+      var Tx = mongoose.model("tx_CA_Withdrawl_Fee");
+      var Q = Tx.findOne({globalUniqueTag:"CURRENT_ACCOUNTS/FEES/WITHDRAWL:test:12"});
+      Q.exec(function (err, tx) {
+        assert.ok(!err, "Error occured: " + (err&&err.message));
+        assert.ok(!tx);
+        done();
+      })
+    });
+  });
+
+
   after(function (done) {
     mongoose.connection.db.dropDatabase();
     mongoose.connection.close(done);

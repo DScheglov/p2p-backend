@@ -6,6 +6,8 @@ var fixtures = {
   institutions: require('../fixtures/institutions'),
   entities: require('../fixtures/entities'),
   accounts: require('../fixtures/accounts'),
+  factories: require('../fixtures/factories'),
+  policies: require('../fixtures/product-policies'),
   products: require('../fixtures/products'),
   contracts: require('../fixtures/contracts')
 }
@@ -20,13 +22,21 @@ describe("Institution.closeOperatingDate", function (done) {
     var prCollection= models.Product.collection;
     var aCollection = models.Account.collection;
     var cCollection = models.Contract.collection;
+    var fCollection = models.AccountFactory.collection;
+    var pCollection = models.AccountingProductPolicy.collection;
     async.series([
       iCollection.insert.bind(iCollection, fixtures.institutions),
       eCollection.insert.bind(eCollection, fixtures.entities),
+      fCollection.insert.bind(fCollection, fixtures.factories),
+      pCollection.insert.bind(pCollection, fixtures.policies),
       prCollection.insert.bind(prCollection, fixtures.products),
       aCollection.insert.bind(aCollection, fixtures.accounts),
       cCollection.insert.bind(cCollection, fixtures.contracts)
-    ], done);
+    ],function (err) {
+      models.AccountFactory.update({}, {
+        $set: {sequence: fixtures.accounts.length + 1}
+      }, {multi: true}, done);
+    });
   });
 
   it("should process close date operations", function(done) {
@@ -48,7 +58,7 @@ describe("Institution.closeOperatingDate", function (done) {
       assert.ok(results);
       // 3 - the nuber of CurrentAccountContracts in the fixtures
       assert.equal(results.contracts, 3);
-      assert.equal(results.accounts, fixtures.accounts.length);
+      assert.equal(results.accounts, fixtures.accounts.length + 1); // account of Interests for one of the contracts
       assert.ok(institution.closedOperatingDate);
       assert.equal(institution.closedOperatingDate.toISOString(), expClosedDate.toISOString());
       assert.ok(!institution.operatingDate);

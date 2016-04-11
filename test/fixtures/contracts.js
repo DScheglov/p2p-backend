@@ -7,8 +7,7 @@ module.exports = exports = [
     "__t" : "CurrentAccountContract",
     "_id" : ObjectId("56e0568b714bfb660ab413f6"),
     "accounts" : {
-      "current" : "001:26207000000007-2620.EUR",
-      "interests" : "001:26289000000001-2628.EUR"
+      "current" : "001:26207000000007-2620.EUR"
     },
     "institution" : ObjectId("56d481db3a4c513a1addd11a"),
     "legalNumber" : "001",

@@ -77,7 +77,21 @@ describe("models.currentAccountContract", function (done) {
       assert.ok(contract.accounts.current);
       assert.ok(contract.accounts.current.title);
       assert.equal(contract.accounts.current.balance, amountToRefill);
-      done();
+      Q = mongoose.model("tx_CA_Refill").findOne({globalUniqueTag: "test:1"});
+      Q.exec(function (err, tx) {
+        assert.ok(!err, "Error occured: " + (err&&err.message));
+        assert.ok(tx);
+        assert.equal(tx.status, "done");
+        assert.ok(tx.settlementPeriod);
+        assert.equal(
+          tx.settlementPeriod.start.toISOString(),
+          contract.settlementPeriod.start.toISOString());
+        assert.equal(
+          tx.settlementPeriod.end.toISOString(),
+          contract.settlementPeriod.end.toISOString());
+        done();
+      });
+
     });
   });
 
@@ -114,7 +128,7 @@ describe("models.currentAccountContract", function (done) {
       assert.equal(_contract, contract);
       assert.ok(contract.accounts.current);
       assert.ok(contract.accounts.current.title);
-      var expFee = Math.round(amountToWithdraw * contract.product.withdrawlFee);
+      var expFee = contract.product.withdrawlFee.calculate(amountToWithdraw);
       var expBalance = amountToRefill - amountToWithdraw - expFee;
       assert.equal(contract.accounts.current.balance, expBalance);
       done();
@@ -198,7 +212,7 @@ describe("models.currentAccountContract", function (done) {
       assert.equal(contract.accounts.current.balance, amountToWithdraw);
       var Tx = mongoose.model("tx_CA_Withdrawl_Fee");
       var Q = Tx.findOne({globalUniqueTag:"CURRENT_ACCOUNTS/FEES/WITHDRAWL:test:8"});
-      var expFee = Math.round(amountToWithdraw * contract.product.withdrawlFee);
+      var expFee = contract.product.withdrawlFee.calculate(amountToWithdraw);
       Q.exec(function (err, tx) {
         assert.ok(!err, "Error occured: " + (err&&err.message));
         assert.ok(tx);
@@ -233,7 +247,7 @@ describe("models.currentAccountContract", function (done) {
       function () {
         var next = arguments[arguments.length-1];
         theBalance = contract.accounts.current.balance;
-        amountToWithdraw = 10*Math.round(theBalance / contract.product.withdrawlFee);
+        amountToWithdraw = 10*Math.round(theBalance / contract.product.withdrawlFee.rate);
         contract.withdraw({
           amount: amountToWithdraw,
           tag: "test:10",
@@ -246,7 +260,7 @@ describe("models.currentAccountContract", function (done) {
       assert.equal(contract.accounts.current.balance, theBalance);
       var Tx = mongoose.model("tx_CA_Withdrawl_Fee");
       var Q = Tx.findOne({globalUniqueTag:"CURRENT_ACCOUNTS/FEES/WITHDRAWL:test:10"});
-      var expFee = Math.round(amountToWithdraw * contract.product.withdrawlFee);
+      var expFee = contract.product.withdrawlFee.calculate(amountToWithdraw);
       Q.exec(function (err, tx) {
         assert.ok(!err, "Error occured: " + (err&&err.message));
         assert.ok(tx);

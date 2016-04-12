@@ -5,6 +5,7 @@ var Schema = mongoose.Schema;
 var SettlementPeriodSchema = require("./tools/settlements").SettlementPeriodSchema;
 var ensureCallback = require("./tools/ensure").callback;
 var ensureId = require("./tools/ensure").id;
+var ensureDefaults = require('./plugins/ensure-defaults');
 
 var transStatuses = ["new", "approved", "pending", "applied", "canceling", "done", "failed", "canceled"];
 
@@ -31,6 +32,7 @@ var TransactionSchema = Schema({
   toObject: { virtuals: true },
   toJSON: { virtuals: true }
 });
+TransactionSchema.plugin(ensureDefaults);
 TransactionSchema.index({"institution": 1});
 TransactionSchema.index({"debitAccount": 1});
 TransactionSchema.index({"creditAccount": 1});

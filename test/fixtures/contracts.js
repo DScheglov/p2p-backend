@@ -13,7 +13,7 @@ module.exports = exports = [
     "legalNumber" : "001",
     "owner" : ObjectId("56d48bd988d600c21be55f05"),
     "product" : {
-      "withdrawlFee" : 0.05,
+      "withdrawlFee" : {rate: 0.05},
       "positiveBalanceAPR" : 0.04,
       "accrueInterestsOnTheFirstDay" : false,
       "accounts" : {
@@ -55,7 +55,7 @@ module.exports = exports = [
     "legalNumber" : "PETROV-001",
     "owner" : ObjectId("56d48bd988d600c21be55f05"),
     "product" : {
-      "withdrawlFee" : 0.05,
+      "withdrawlFee" : {rate: 0.05},
       "positiveBalanceAPR" : 0.04,
       "accrueInterestsOnTheFirstDay" : false,
       "accounts" : {
@@ -119,7 +119,7 @@ module.exports = exports = [
       },
       "accrueInterestsOnTheFirstDay" : true,
       "positiveBalanceAPR" : 0.12,
-      "withdrawlFee" : 0.01
+      "withdrawlFee" : {rate: 0.01}
     },
     "productCode" : "LE_IA.001",
     "settlementDayOfMonth" : 5,
@@ -161,7 +161,7 @@ module.exports = exports = [
     "institution" : ObjectId("56d481db3a4c513a1addd11a"),
     "settlementDayOfMonth" : 1,
     "accounts" : {
-      "gateway" : "FIRST:37006000000006-3700.EUR"
+      "gateway" : "001:37006000000006-3700.EUR"
     },
     "status" : "active"
   }

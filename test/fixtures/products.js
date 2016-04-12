@@ -39,10 +39,10 @@ module.exports = exports = [{
     "_id" : ObjectId("56d817c31958540309925f5c"),
     "accountingPolicy" : ObjectId("56d81579e599a1bb0757ae7c"),
     "accounts" : {
-      "incomingGateway" : "FIRST:28090000000001-2809.EUR",
-      "outgoingGateway" : "FIRST:29091000000001-2909.EUR",
-      "incomes" : "FIRST:60007000000001-6000.EUR",
-      "expenses" : "FIRST:70009000000002-7000.EUR"
+      "incomingGateway" : "001:28090000000001-2809.EUR",
+      "outgoingGateway" : "001:29091000000001-2909.EUR",
+      "incomes" : "001:60007000000001-6000.EUR",
+      "expenses" : "001:70009000000002-7000.EUR"
     },
     "active" : {
       "from" : ISODate("2016-03-03T10:53:55.761Z")
@@ -61,16 +61,16 @@ module.exports = exports = [{
       "INVESTORS ACCOUNTS"
     ],
     "title" : "Investor Account of Private Individual",
-    "withdrawlFee" : 0.05
+    "withdrawlFee" : {rate: 0.05}
   }, {
     "__t" : "CurrentAccountProduct",
     "_id" : ObjectId("56e287ed72275316068bb184"),
     "accountingPolicy" : ObjectId("56e28f9072275316068bb187"),
     "accounts" : {
-      "incomingGateway" : "FIRST:28090000000001-2809.EUR",
-      "outgoingGateway" : "FIRST:29091000000001-2909.EUR",
-      "incomes" : "FIRST:60007000000001-6000.EUR",
-      "expenses" : "FIRST:70009000000002-7000.EUR"
+      "incomingGateway" : "001:28090000000001-2809.EUR",
+      "outgoingGateway" : "001:29091000000001-2909.EUR",
+      "incomes" : "001:60007000000001-6000.EUR",
+      "expenses" : "001:70009000000002-7000.EUR"
     },
     "accrueInterestsOnTheFirstDay" : true,
     "active" : {
@@ -90,7 +90,7 @@ module.exports = exports = [{
       "INVESTORS ACCOUNTS"
     ],
     "title" : "Investor Account of Legal Entities",
-    "withdrawlFee" : 0.01
+    "withdrawlFee" : {rate: 0.01}
   }, {
     "__t" : "CurrentAccountProduct",
     "accountingPolicy" : ObjectId("56e28f9072275316068bb187"),
@@ -118,7 +118,7 @@ module.exports = exports = [{
       "INVESTORS ACCOUNTS"
     ],
     "title" : "Investor Account of Private Individual",
-    "withdrawlFee" : 0.00
+    "withdrawlFee" : {rate: 0}
   }
 
 ];

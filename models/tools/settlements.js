@@ -7,7 +7,7 @@ var SettlementPeriodSchema = new Schema({
   end: {type: Date, required: true}
 }, {_id: false});
 
- function define(options) {
+function define(options) {
   assert.ok(options, "Specify options");
   assert.ok(options.settlementDayOfMonth, "Specify settlementDayOfMonth in options");
   assert.ok(options.operatingDate, "Specify operatingDate in options");

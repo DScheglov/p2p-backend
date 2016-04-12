@@ -6,13 +6,14 @@ var Schema = mongoose.Schema;
 
 var Contract = require("../contracts").Contract;
 var ensureCallback = require("../tools/ensure").callback;
+var operate = require('../tools/operate');
 var settlements = require('../tools/settlements');
 
 var CurrentAccountProductSchema = require("./products").CurrentAccountProductSchema;
 var tx = require("./transactions");
 
 var CurrentAccountContract = new Schema({
-  product: {type: CurrentAccountProductSchema.options, required: true},
+  product: {type: CurrentAccountProductSchema, required: true},
   accounts: {
     current: {type: String, ref: "Account"},
     holds: {type: String, ref: "Account"},
@@ -21,9 +22,9 @@ var CurrentAccountContract = new Schema({
 });
 
 CurrentAccountContract.statics.refill = wrapInstanceMethod("refill");
-CurrentAccountContract.methods.refill = refillAccount;
+CurrentAccountContract.methods.refill = operate(tx.CA_Refill, "accounts.current");
 CurrentAccountContract.statics.withdraw = wrapInstanceMethod("withdraw");
-CurrentAccountContract.methods.withdraw = withdrawAmount;
+CurrentAccountContract.methods.withdraw = operate(tx.CA_Withdraw, "accounts.current");
 CurrentAccountContract.statics.accrueInterests = wrapInstanceMethod("accrueInterests");
 CurrentAccountContract.methods.accrueInterests = accrueInterests;
 CurrentAccountContract.statics.payoutInterests = wrapInstanceMethod("payoutInterests");
@@ -46,116 +47,6 @@ module.exports = exports = {
 // ======================================================================== //
 // Implementation
 //
-
-function refillAccount(options, callback) {
-  try {
-    assert.ok(options && options.amount, "Specify the amount of the refilling.");
-    assert.ok(options.amount > 0, "The amount of refilling must be greater then 0");
-    assert.ok(options && options.tag, "All exposed operations requires the unique tag. Specify tag");
-  } catch(e) {
-    return callback(e);
-  }
-  var self = this;
-
-  var t = new tx.CA_Refill({
-    debitAccount: this.product.accounts.incomingGateway,
-    creditAccount: this.accounts.current,
-    amount: options.amount,
-    description: options.description,
-    status: "approved",
-    settlementPeriod: this.settlementPeriod.toObject(),
-    contract: this._id,
-    globalUniqueTag: options.tag
-  });
-
-  return t.execute(function (err, t) {
-    if (err) return callback(err);
-    return self.populate("accounts.current", callback);
-  });
-
-}
-
-function withdrawAmount(options, callback) {
-  var self = this;
-  var fee = 0;
-  var tFee = null;
-
-  return async.waterfall([
-    doAssert,
-    calculateFee,
-    transactFee,
-    transact
-  ], function(err) {
-    if (err) return rollback_fee(err, callback);
-    return self.populate("accounts.current", callback);
-  });
-
-  function doAssert() {
-    var next = ensureCallback.apply(null, arguments);
-    try {
-      assert.ok(options && options.amount, "Specify the amount of the withdrawl.");
-      assert.ok(options.amount > 0, "The amount of withdrawl must be greate then 0");
-      assert.ok(options.tag, "All exposed operations requires the unique tag. Specify tag");
-    } catch(e) {
-      return next(e);
-    }
-    return next();
-  }
-
-  function calculateFee() {
-    var next = ensureCallback.apply(null, arguments);
-    fee = Math.round(self.product.withdrawlFee * options.amount);
-    return next();
-  }
-
-  function transactFee() {
-    var next = ensureCallback.apply(null, arguments);
-    if (fee > 0) {
-      tFee = new tx.CA_Withdrawl_Fee({
-        debitAccount: self.accounts.current,
-        creditAccount: self.product.accounts.incomes,
-        amount: fee,
-        status: "approved",
-        globalUniqueTag: options.tag,
-        settlementPeriod: self.settlementPeriod.toObject(),
-        contract: self,
-        strictMode: true
-      });
-      return tFee.execute(next);
-    }
-    return next();
-  }
-
-  function transact(tFee) {
-    var next = ensureCallback.apply(null, arguments);
-    var tWithdraw = new tx.CA_Withdraw({
-      debitAccount: self.accounts.current,
-      creditAccount: self.product.accounts.outgoingGateway,
-      amount: options.amount,
-      description: options.description,
-      status: "approved",
-      globalUniqueTag: options.tag,
-      settlementPeriod: self.settlementPeriod.toObject(),
-      contract: self,
-      strictMode: true
-    });
-    return tWithdraw.execute(next);
-  }
-
-  function rollback_fee(err) {
-    var next = ensureCallback.apply(null, arguments);
-    if (!tFee || tFee.status !== "done") return next(err);
-
-    tFee.statusDescription = err.message
-    return tFee.cancel(function(error) {
-      if (error) return next(
-        new Error(err.message + " " + error.message)
-      );
-      return next(err);
-    });
-  }
-
-}
 
 function accrueInterests(callback) {
   var self = this;

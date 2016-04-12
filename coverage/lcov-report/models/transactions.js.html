@@ -20,14 +20,14 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">86.03% </span>
+        <span class="strong">86.19% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>154/179</span>
+        <span class='fraction'>156/181</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">67.06% </span>
+        <span class="strong">64.71% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>57/85</span>
+        <span class='fraction'>55/85</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
@@ -35,9 +35,9 @@
         <span class='fraction'>37/37</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">98.66% </span>
+        <span class="strong">98.68% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>147/149</span>
+        <span class='fraction'>149/151</span>
       </div>
     </div>
   </div>
@@ -364,18 +364,20 @@
 319
 320
 321
-322</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+322
+323
+324</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -397,6 +399,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
@@ -438,19 +442,19 @@
 <span class="cline-any cline-yes">23×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">23×</span>
-<span class="cline-any cline-yes">21×</span>
+<span class="cline-any cline-yes">23×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">23×</span>
-<span class="cline-any cline-yes">44×</span>
-<span class="cline-any cline-yes">44×</span>
-<span class="cline-any cline-yes">44×</span>
-<span class="cline-any cline-yes">44×</span>
-<span class="cline-any cline-yes">44×</span>
-<span class="cline-any cline-yes">44×</span>
+<span class="cline-any cline-yes">46×</span>
+<span class="cline-any cline-yes">46×</span>
+<span class="cline-any cline-yes">46×</span>
+<span class="cline-any cline-yes">46×</span>
+<span class="cline-any cline-yes">46×</span>
+<span class="cline-any cline-yes">46×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">44×</span>
-<span class="cline-any cline-yes">44×</span>
+<span class="cline-any cline-yes">46×</span>
+<span class="cline-any cline-yes">46×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">23×</span>
@@ -692,6 +696,7 @@ var Schema = mongoose.Schema;
 var SettlementPeriodSchema = require("./tools/settlements").SettlementPeriodSchema;
 var ensureCallback = require("./tools/ensure").callback;
 var ensureId = require("./tools/ensure").id;
+var ensureDefaults = require('./plugins/ensure-defaults');
 &nbsp;
 var transStatuses = ["new", "approved", "pending", "applied", "canceling", "done", "failed", "canceled"];
 &nbsp;
@@ -718,6 +723,7 @@ var TransactionSchema = Schema({
   toObject: { virtuals: true },
   toJSON: { virtuals: true }
 });
+TransactionSchema.plugin(ensureDefaults);
 TransactionSchema.index({"institution": 1});
 TransactionSchema.index({"debitAccount": 1});
 TransactionSchema.index({"creditAccount": 1});
@@ -755,10 +761,10 @@ function preValidate(next) {
   var self = this;
   <span class="missing-if-branch" title="else path not taken" >E</span>if (!this.debitAccount ||
       !this.debitAccount.institution ||
-      !this.debitAccount.institution.title) {
+<span class="branch-2 cbranch-no" title="branch not covered" >      !this.debitAccount.institution.title)</span> {
     accountsToBeLoaded.push(['debitAccount', true]);
   }
-  if (!this.creditAccount || !this.creditAccount.type) {
+  <span class="missing-if-branch" title="else path not taken" >E</span>if (!this.creditAccount || !this.creditAccount.type) {
     accountsToBeLoaded.push(['creditAccount', false]);
   }
   return async.each(accountsToBeLoaded, function (aObj, cb) {
@@ -1012,7 +1018,7 @@ function approveAndExecute(callback) {
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Apr 11 2016 18:42:18 GMT+0300 (EEST)
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Apr 12 2016 19:23:57 GMT+0300 (EEST)
 </div>
 </div>
 <script src="../prettify.js"></script>

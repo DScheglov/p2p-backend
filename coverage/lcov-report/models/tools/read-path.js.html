@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>Code coverage report for models/current-account/products.js</title>
+    <title>Code coverage report for models/tools/read-path.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -16,7 +16,7 @@
 <div class='wrapper'>
   <div class='pad1'>
     <h1>
-      <a href="../../index.html">all files</a> / <a href="index.html">models/current-account/</a> products.js
+      <a href="../../index.html">all files</a> / <a href="index.html">models/tools/</a> read-path.js
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
@@ -27,12 +27,12 @@
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>0/0</span>
+        <span class='fraction'>2/2</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>0/0</span>
+        <span class='fraction'>2/2</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
@@ -56,67 +56,31 @@
 11
 12
 13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
+14</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">60×</span>
+<span class="cline-any cline-yes">34×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-yes">26×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">var mongoose = require("mongoose");
-var Schema = mongoose.Schema;
-var Product = require("../products").Product;
-var FeeSchema = require('../fees').FeeSchema;
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">module.exports = exports = readPath;
 &nbsp;
-var CurrentAccountProductSchema = new Schema({
-  withdrawlFee : {type: FeeSchema, require: true, default: {rate: 0}},
-  positiveBalanceAPR: {type: Number, required: true, default: 0},
-  accrueInterestsOnTheFirstDay: {type: Boolean, required: true, default: false},
-  accounts: {
-    incomingGateway: {type: String, ref: 'Account'},
-    outgoingGateway: {type: String, ref: 'Account'},
-    incomes: {type: String, ref: 'Account'},
-    expenses: {type: String, ref: 'Account'}
-  }
-});
+function readPath(path) {
 &nbsp;
-var CurrentAccountProduct = Product.discriminator(
-  "CurrentAccountProduct", CurrentAccountProductSchema
-);
+  return function __readPath() {
+    if (!this._doc) {
+      return;
+    }
+    var v = this.get(path);
+    return v;
+  };
 &nbsp;
-module.exports = exports = {
-  CurrentAccountProduct: CurrentAccountProduct,
-  CurrentAccountProductSchema: CurrentAccountProductSchema
 }
 &nbsp;</pre></td></tr>
 </table></pre>

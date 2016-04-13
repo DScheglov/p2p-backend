@@ -56,8 +56,7 @@ describe("Institution.closeOperatingDate", function (done) {
     ], function (err, results) {
       assert.ok(!err, "Error occured: " + (err&&err.message));
       assert.ok(results);
-      // 3 - the nuber of CurrentAccountContracts in the fixtures
-      assert.equal(results.contracts, 3);
+      assert.equal(results.contracts, fixtures.contracts.length);
       assert.equal(results.accounts, fixtures.accounts.length + 1); // account of Interests for one of the contracts
       assert.ok(institution.closedOperatingDate);
       assert.equal(institution.closedOperatingDate.toISOString(), expClosedDate.toISOString());

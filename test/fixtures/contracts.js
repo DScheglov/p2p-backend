@@ -130,6 +130,7 @@ module.exports = exports = [
     "status" : "active",
     "statusDate" : ISODate("2016-03-11T10:10:44.147Z")
   }, {
+    "__t" : "Contract",
     "_id" : ObjectId("56fbd972d7a026900f93b274"),
     "settlementPeriod" : {
       "start" : ISODate("2016-04-06T00:00:00Z"),

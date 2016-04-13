@@ -104,16 +104,13 @@ describe("models.Contract", function () {
 
   it("should provide void settlement at closeOperatingDate event for contracts", function(done) {
 
-    async.waterfall([
-      Contract.remove.bind(Contract, {__t: {$ne: "Contract"}}),
-      Contract.closeOperatingDate.bind(Contract, {
+    Contract.closeOperatingDate({
         operatingDate : fixtures.institutions[0].operatingDate,
         institution: fixtures.institutions[0]
-      })
-    ], function(err, results) {
+    }, function(err, results) {
       assert.ok(!err, "Error occured: " + (err&&err.message));
       assert.ok(results);
-      assert.equal(results.contracts, 0);
+      assert.equal(results.contracts, fixtures.contracts.length + 1);
       done();
     });
   });
@@ -135,7 +132,7 @@ describe("models.Contract", function () {
     }, function(err, results) {
       assert.ok(!err, "Error occured: " + (err&&err.message));
       assert.ok(results);
-      assert.equal(results.contracts, 0);
+      assert.equal(results.contracts, fixtures.contracts.length + 1);
       done();
     });
   });

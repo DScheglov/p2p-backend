@@ -1,6 +1,6 @@
 var async = require("async");
 var assert = require("assert");
-var mongoose = require("mongoose");
+var mongoose = require("mongoose"); require('../lib/schema-ondo');
 var Schema = mongoose.Schema;
 
 var ProductSchema = require("./products").Product.schema.options;
@@ -40,6 +40,8 @@ ContractSchema.index({"legalDate": 1}, {sparse: true})
 ContractSchema.pre("validate", preValidate);
 ContractSchema.pre("save", preSave);
 
+ContractSchema.methods.closeOperatingDate = closeOperatingDate;
+ContractSchema.methods.openOperatingDate = openOperatingDate;
 ContractSchema.statics.closeOperatingDate = closeOperatingDateForAll;
 ContractSchema.statics.openOperatingDate = openOperatingDateForAll;
 
@@ -124,6 +126,40 @@ function preSave(next) {
 
 }
 
+function closeOperatingDate(options, callback) {
+  this.emitAsync("endOfDay", this, options, callback);
+}
+
+function openOperatingDate(options, callback) {
+  try {
+    assert.ok(options, "Specify options");
+    assert.ok(options.operatingDate, "Specify new operatingDate in options");
+  } catch(err) {
+    if (typeof(callback) === 'function') return callback(err);
+    throw err;
+  }
+
+  return async.waterfall([
+    this.emitAsync.bind(this, "startOfDay", options),
+    verifyStartOfPeriod.bind(this, options)
+  ], callback);
+
+  function verifyStartOfPeriod(options) {
+    var next = ensureCallback.apply(null, arguments);
+    if (+options.operatingDate > +this.settlementPeriod.end) {
+      settlements.nextPeriod.call(this.settlementPeriod);
+      this.save(function (err, _self) {
+        if (err) {
+          if (typeof(next) === 'function') return next(err);
+          throw err;
+        }
+        this.emitAsync("startOfPeriod", _self, options, next);
+      });
+    } else next();
+  }
+
+}
+
 function closeOperatingDateForAll(options, callback) {
   callback = ensureCallback.apply(null, arguments);
   try {
@@ -161,7 +197,7 @@ function closeOperatingDateForAll(options, callback) {
     if (err) {
       return log.error(err);
     }
-    return log.info("date closed for %s: %s", doc.__t, doc._id.toString());
+    return log.info("date closed for %s: %s", doc.__t || "void Contract", doc._id.toString());
   }
 }
 
@@ -180,10 +216,13 @@ function openOperatingDateForAll(options, callback) {
     status: "active"
   }).stream(
   ).on("data", function(contract) {
+    var _stream = this;
     if (contract.openOperatingDate instanceof Function) {
+      _stream.pause();
       contract.openOperatingDate(options, function (err) {
         if (!err) contracts++;
         toLog(err, contract);
+        _stream.resume();
       });
     }
   }).on("error", function(err) {
@@ -198,6 +237,6 @@ function openOperatingDateForAll(options, callback) {
     if (err) {
       return log.error(err);
     }
-    return log.info("date opened for %s: %s", doc.__t, doc._id);
+    return log.info("date opened for %s: %s", doc.__t || "void Contract", doc._id.toString());
   }
 }

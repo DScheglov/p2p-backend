@@ -29,8 +29,16 @@ CurrentAccountContract.statics.accrueInterests = wrapInstanceMethod("accrueInter
 CurrentAccountContract.methods.accrueInterests = accrueInterests;
 CurrentAccountContract.statics.payoutInterests = wrapInstanceMethod("payoutInterests");
 CurrentAccountContract.methods.payoutInterests = payoutInterests;
-CurrentAccountContract.methods.closeOperatingDate = closeOperatingDate;
-CurrentAccountContract.methods.openOperatingDate = openOperatingDate;
+// CurrentAccountContract.methods.closeOperatingDate = closeOperatingDate;
+// CurrentAccountContract.methods.openOperatingDate = openOperatingDate;
+
+CurrentAccountContract.ondo('endOfDay', function(options, cb) {
+  return this.accrueInterests(cb);
+});
+
+CurrentAccountContract.ondo('startOfPeriod', function(options, cb) {
+  return this.payoutInterests(options, cb);
+});
 
 // ======================================================================== //
 // Interface
@@ -147,27 +155,27 @@ function payoutInterests(callback) {
   }
 }
 
-function closeOperatingDate(options, callback) {
-  return this.accrueInterests(callback);
-}
+// function closeOperatingDate(options, callback) {
+//   return this.accrueInterests(callback);
+// }
 
-function openOperatingDate(options, callback) {
-  try {
-    assert.ok(options, "Specify options");
-    assert.ok(options.operatingDate, "Specify new operatingDate in options");
-  } catch(e) {
-    return callback(e);
-  }
-  if (+options.operatingDate > +this.settlementPeriod.end) {
-    settlements.nextPeriod.call(this.settlementPeriod);
-    this.save(function (err, _self) {
-      if (err) return callback(err);
-      return _self.payoutInterests(callback);
-    });
-
-  }
-  return callback();
-}
+// function openOperatingDate(options, callback) {
+//   try {
+//     assert.ok(options, "Specify options");
+//     assert.ok(options.operatingDate, "Specify new operatingDate in options");
+//   } catch(e) {
+//     return callback(e);
+//   }
+//   if (+options.operatingDate > +this.settlementPeriod.end) {
+//     settlements.nextPeriod.call(this.settlementPeriod);
+//     this.save(function (err, _self) {
+//       if (err) return callback(err);
+//       return _self.payoutInterests(callback);
+//     });
+//
+//   }
+//   return callback();
+// }
 
 function wrapInstanceMethod(method) {
   return function (options, callback) {

@@ -7,3 +7,4 @@
 /admin/
 /pinguin/
 *.log
+/local/

@@ -1,6 +1,6 @@
 var async = require("async");
 var assert = require("assert");
-var mongoose = require("mongoose"); require('../lib/schema-ondo');
+var mongoose = require("mongoose"); require('schema-emit-async')
 var Schema = mongoose.Schema;
 
 var ProductSchema = require("./products").Product.schema.options;
@@ -127,7 +127,7 @@ function preSave(next) {
 }
 
 function closeOperatingDate(options, callback) {
-  this.emitAsync("endOfDay", this, options, callback);
+  if (!this.emitAsync("endOfDay", this, options, callback)) return callback();
 }
 
 function openOperatingDate(options, callback) {
@@ -139,23 +139,31 @@ function openOperatingDate(options, callback) {
     throw err;
   }
 
+  var self = this;
+
   return async.waterfall([
-    this.emitAsync.bind(this, "startOfDay", options),
-    verifyStartOfPeriod.bind(this, options)
+    emitStartOfDay,
+    verifyStartOfPeriod
   ], callback);
+
+  function emitStartOfDay(options) {
+    var next = ensureCallback.apply(null, arguments);
+    if (!self.emitAsync("startOfDay", self, options, next)) return next();
+  }
 
   function verifyStartOfPeriod(options) {
     var next = ensureCallback.apply(null, arguments);
-    if (+options.operatingDate > +this.settlementPeriod.end) {
-      settlements.nextPeriod.call(this.settlementPeriod);
-      this.save(function (err, _self) {
+    if (+options.operatingDate > +self.settlementPeriod.end) {
+      settlements.nextPeriod.call(self.settlementPeriod);
+      return self.save(function (err, _self) {
         if (err) {
           if (typeof(next) === 'function') return next(err);
           throw err;
         }
-        this.emitAsync("startOfPeriod", _self, options, next);
+        if (!self.emitAsync("startOfPeriod", self, options, next)) return next();
       });
-    } else next();
+    }
+    return next();
   }
 
 }

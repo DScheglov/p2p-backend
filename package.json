@@ -22,14 +22,15 @@
     "body-parser": "^1.14.1",
     "express": "^4.13.3",
     "express-winston": "^1.3.0",
+    "fin-rounds": "^0.1.0",
     "method-override": "^2.3.5",
     "model-api": "^1.0.13",
     "mongoose": "^4.4.10",
+    "schema-emit-async": "^0.2.1",
     "swig": "^1.4.2",
     "winston": "^2.1.0"
   },
   "devDependencies": {
-    "decache": "^3.0.5",
     "istanbul": "^0.4.3",
     "mocha": "^2.4.5"
   },

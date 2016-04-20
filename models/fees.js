@@ -15,18 +15,11 @@ module.exports = exports = {
 }
 
 function calculateFee(base) {
-  var product = ensureProductRound(this.$parent);
+  var product = this.$parent;
   var amount = 0;
   if (this.fixed) amount += amount;
   if (this.rate) amount += product.round(this.rate * base);
   if (this.min) amount = amount > this.min ? amount : this.min;
   if (this.max) amount = amount < this.max ? amount : this.max;
   return amount;
-}
-
-function ensureProductRound (product) {
-  product = product || {};
-  product.round = product.round || Math.round;
-  if (!(product.round instanceof Function)) product.round = Math.round;
-  return product;
 }

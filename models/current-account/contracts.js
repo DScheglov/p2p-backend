@@ -8,6 +8,7 @@ var Contract = require("../contracts").Contract;
 var ensureCallback = require("../tools/ensure").callback;
 var operate = require('../tools/operate');
 var settlements = require('../tools/settlements');
+var log = require('../../lib/logger')(module);
 
 var CurrentAccountProductSchema = require("./products").CurrentAccountProductSchema;
 var tx = require("./transactions");
@@ -29,14 +30,12 @@ CurrentAccountContract.statics.accrueInterests = wrapInstanceMethod("accrueInter
 CurrentAccountContract.methods.accrueInterests = accrueInterests;
 CurrentAccountContract.statics.payoutInterests = wrapInstanceMethod("payoutInterests");
 CurrentAccountContract.methods.payoutInterests = payoutInterests;
-// CurrentAccountContract.methods.closeOperatingDate = closeOperatingDate;
-// CurrentAccountContract.methods.openOperatingDate = openOperatingDate;
 
-CurrentAccountContract.ondo('endOfDay', function(options, cb) {
+CurrentAccountContract.when('endOfDay', function(options, cb) {
   return this.accrueInterests(cb);
 });
 
-CurrentAccountContract.ondo('startOfPeriod', function(options, cb) {
+CurrentAccountContract.when('startOfPeriod', function(options, cb) {
   return this.payoutInterests(options, cb);
 });
 
@@ -154,28 +153,6 @@ function payoutInterests(callback) {
     return pTx.execute(next);
   }
 }
-
-// function closeOperatingDate(options, callback) {
-//   return this.accrueInterests(callback);
-// }
-
-// function openOperatingDate(options, callback) {
-//   try {
-//     assert.ok(options, "Specify options");
-//     assert.ok(options.operatingDate, "Specify new operatingDate in options");
-//   } catch(e) {
-//     return callback(e);
-//   }
-//   if (+options.operatingDate > +this.settlementPeriod.end) {
-//     settlements.nextPeriod.call(this.settlementPeriod);
-//     this.save(function (err, _self) {
-//       if (err) return callback(err);
-//       return _self.payoutInterests(callback);
-//     });
-//
-//   }
-//   return callback();
-// }
 
 function wrapInstanceMethod(method) {
   return function (options, callback) {

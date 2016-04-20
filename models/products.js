@@ -2,6 +2,7 @@ var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 var statusHistory = require("./plugins/status-history");
+var roundPlugin = require('./plugins/round');
 
 var productStatuses = ["new", "active", "close"];
 var ProductSchema = new Schema({
@@ -17,6 +18,7 @@ var ProductSchema = new Schema({
   productParams: {type: Schema.Types.Mixed, required: true, default: {} }
 });
 ProductSchema.plugin(statusHistory, {statusList: productStatuses});
+ProductSchema.plugin(roundPlugin);
 ProductSchema.index({"institution": 1});
 ProductSchema.index({"institution": 1, "code": 1}, {unique: 1});
 ProductSchema.index({"institution": 1, "category": 1});

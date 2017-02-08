@@ -1,15 +1,14 @@
-var models = require('../models').models;
+'use strict';
 
-module.exports = exports = function (ModelAPI) {
-  ModelAPI.expose(models.Account, {
-    searchMethod: 'GET'
-  });
-  ModelAPI.expose(models.AccountFactory, {
-    searchMethod: 'GET',
-    plural: "AccountFactories",
-    exposeStatic: {
-      openAccount: "Opens an Account for requested schema"
-    }
-  });
-  return {};
-}
+const modelAPI = require('./api');
+const models = require('../models').models;
+
+
+modelAPI.expose(models.Account);
+
+modelAPI.expose(models.AccountFactory, {
+  plural: "AccountFactories",
+  exposeStatic: {
+    openAccount: "Opens an Account for requested schema"
+  }
+});

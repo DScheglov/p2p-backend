@@ -1,6 +1,6 @@
 var async = require("async")
 var assert = require('assert');
-var mongoose = require('mongoose');
+var mongoose = require('../../mongoose');
 var Institution = require('../../models/institutions').Institution;
 var accounts = require('../../models/accounts');
 var Transaction = require('../../models/transactions').Transaction;

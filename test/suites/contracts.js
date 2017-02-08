@@ -1,7 +1,7 @@
 
 var async = require("async")
 var assert = require('assert');
-var mongoose = require('mongoose');
+var mongoose = require('../../mongoose')
 var Institution = require('../../models/institutions').Institution;
 var Entity = require('../../models/entities').Entity;
 var ProductPolicy = require('../../models/accounting-policies').AccountingProductPolicy;

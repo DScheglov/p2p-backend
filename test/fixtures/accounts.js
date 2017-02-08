@@ -1,4 +1,4 @@
-var ObjectId = require("mongoose").Types.ObjectId;
+var ObjectId = require('../../mongoose').Types.ObjectId;
 
 module.exports = exports = [
   {

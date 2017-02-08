@@ -1,9 +1,10 @@
-var models = require('../models/').models;
+'use strict';
 
-module.exports = exports = function (ModelAPI) {
-  ModelAPI.expose(models.AccountingProductPolicy, {
-    searchMethod: 'GET',
-    plural: "ProductPolicies"
-  });
-  return {};
-}
+const modelAPI = require('./api');
+const models = require('../models').models;
+
+modelAPI.expose(models.AccountingProductPolicy, {
+  plural: "ProductPolicies"
+});
+
+module.exports = exports = modelAPI;

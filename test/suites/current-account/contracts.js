@@ -1,6 +1,6 @@
 var async = require("async");
 var assert = require('assert');
-var mongoose = require('mongoose');
+var mongoose = require('../../../mongoose');
 var models = require('../../../models/models');
 var fixtures = {
   institutions: require('../../fixtures/institutions'),

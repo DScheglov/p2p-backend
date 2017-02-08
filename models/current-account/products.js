@@ -1,4 +1,4 @@
-var mongoose = require("mongoose");
+var mongoose = require("../../mongoose");
 var Schema = mongoose.Schema;
 var Product = require("../products").Product;
 var FeeSchema = require('../fees').FeeSchema;

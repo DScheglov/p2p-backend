@@ -1,18 +1,16 @@
-var models = require('../models').models;
+'use strict';
 
-module.exports = exports = function (ModelAPI) {
+const modelAPI = require('./api');
+const models = require('../models').models;
 
-  ModelAPI.expose(models.PrivateIndividual, {
-    searchMethod: 'GET',
-    apiName: "PrivateIndividual",
-    plural: "PrivateIndividuals"
-  });
+modelAPI.expose(models.PrivateIndividual, {
+  apiName: "PrivateIndividual",
+  plural: "PrivateIndividuals"
+});
 
-  ModelAPI.expose(models.LegalEntity, {
-    searchMethod: 'GET',
-    apiName: "LegalEntity",
-    plural: "LegalEntities"
-  });
+modelAPI.expose(models.LegalEntity, {
+  apiName: "LegalEntity",
+  plural: "LegalEntities"
+});
 
-  return {};
-}
+module.exports = modelAPI;

@@ -1,6 +1,6 @@
 var async = require("async");
 var assert = require("assert");
-var mongoose = require("mongoose");
+var mongoose = require('../mongoose');
 var Schema = mongoose.Schema;
 
 var statusHistory = require('./plugins/status-history');

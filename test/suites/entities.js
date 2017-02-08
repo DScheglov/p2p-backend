@@ -1,6 +1,6 @@
 var async = require("async")
 var assert = require('assert');
-var mongoose = require('mongoose');
+var mongoose = require('../../mongoose')
 var entities = require('../../models/entities');
 var Entity = entities.Entity;
 var PrivateIndividual = entities.PrivateIndividual;

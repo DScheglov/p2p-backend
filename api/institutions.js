@@ -1,11 +1,10 @@
-var models = require('../models/').models;
+'use strict';
 
-module.exports = exports = function (ModelAPI) {
-  ModelAPI.expose(models.Institution, {
-    searchMethod: 'GET',
-    expose: {
-      "*": true
-    }
-  })
-  return {};
-}
+const modelAPI = require('./api');
+const models = require('../models').models;
+
+modelAPI.expose(models.Institution, {
+  expose: {"*": true}
+})
+
+module.exports = exports = modelAPI;

@@ -1,6 +1,6 @@
 var async = require("async");
 var assert = require('assert');
-var mongoose = require('mongoose'); //require('../../lib/schema-ondo');
+var mongoose = require('../../mongoose'); //require('../../lib/schema-ondo');
 var Schema = mongoose.Schema;
 var statusHistory = require("../../models/plugins/status-history");
 

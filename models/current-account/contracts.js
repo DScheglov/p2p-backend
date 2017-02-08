@@ -1,7 +1,7 @@
 var utils = require("util");
 var assert = require("assert");
 var async = require("async");
-var mongoose = require("mongoose");
+var mongoose = require("../../mongoose");
 var Schema = mongoose.Schema;
 
 var Contract = require("../contracts").Contract;

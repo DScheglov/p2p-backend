@@ -1,5 +1,7 @@
-var swig = require("swig");
-var mongoose = require("mongoose");
+'use strict';
+
+var twig = require("twig");
+var mongoose = require('../mongoose');
 var Schema = mongoose.Schema;
 var ensureId = require('./tools/ensure').id;
 var accountTypes = require('./accounts').accountTypes;
@@ -120,8 +122,8 @@ function openAccount(factory, options, cb) {
 
 function generate(options) {
   var tS = this.template || "{{institution}}:{{prefix|wide(4)}}{{controll}}{{sequence|wide(-9)}}{{sufix}}-{{GLNumber}}.{{currency|upper}}";
-  var tmpl = swig.compile(tS);
-  return tmpl({
+  var tmpl = twig.twig({data: tS});
+  return tmpl.render({
     prefix: this.prefix,
     sufix: this.sufix,
     institution: this.institutionCode,
@@ -133,7 +135,7 @@ function generate(options) {
   });
 };
 
-swig.setFilter("wide", function (value, width, filler) {
+twig.extendFilter("wide", function (value, width, filler) {
   var s = "" + value;
   var left = width > 0;
   width = Math.abs(width);

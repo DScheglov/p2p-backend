@@ -1,17 +1,16 @@
+'use strict';
 
-var ModelAPI = require('model-api')();
+const modelAPI = require('./api');
 
-module.exports = exports = function(app) {
-  ModelAPI.assign(app, '/api', 'v1');
+require('./entities');
+require('./accounts');
+require('./institutions');
+require('./transactions');
+require('./accounting-policies');
+require('./products');
+require('./contracts');
+require('./products/current-account');
 
-  require('./entities')(ModelAPI);
-  require('./accounts')(ModelAPI);
-  require('./institutions')(ModelAPI);
-  require('./transactions')(ModelAPI);
-  require('./accounting-policies')(ModelAPI);
-  require('./products')(ModelAPI);
-  require('./contracts')(ModelAPI);
-  require('./products/current-account')(ModelAPI);
+modelAPI.exposeSwaggerUi();
 
-  return ModelAPI;
-}
+module.exports = exports = modelAPI;

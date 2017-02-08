@@ -1,6 +1,6 @@
 var assert = require('assert');
 var utils = require('util');
-var mongoose = require('mongoose');
+var mongoose = require('../mongoose');
 var Schema = mongoose.Schema;
 var log = require('../lib/logger')(module);
 

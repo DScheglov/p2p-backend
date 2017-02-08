@@ -1,8 +1,9 @@
-var _e = require("util")._extend;
+'use strict';
+
 module.exports = exports = extendAccount;
 
 function extendAccount(options) {
-  return _e({
+  return Object.assign({
     type: String, ref: "Account", required: true
   }, options);
 }

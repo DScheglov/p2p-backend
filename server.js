@@ -7,13 +7,12 @@ var app = express();
 var log = require("./lib/logger")(module);
 var instHeader = require('./lib/institution-header');
 var db = require("./models/index").db;
-var ModelAPI = require('./api')(app);
+var modelAPI = require('./api');
 
 app.use(require('./lib/logger')(module, true));
 app.use(bodyParser.json());
 app.use(methodOverride('X-HTTP-Method-Override')); // поддержка put и delete
-app.use("/api/v1", instHeader);
-ModelAPI.implement();
+app.use('/api/v1', instHeader, modelAPI);
 
 app.use(function(req, res, next){
   res.status(404);

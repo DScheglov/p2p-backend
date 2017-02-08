@@ -1,5 +1,7 @@
+'use strict';
+
 var assert = require("assert");
-var mongoose = require("mongoose");
+var mongoose = require("../../mongoose");
 var Schema = mongoose.Schema;
 
 var SettlementPeriodSchema = new Schema({

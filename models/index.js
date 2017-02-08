@@ -1,4 +1,4 @@
-var mongoose    = require('mongoose');
+var mongoose    = require('../mongoose');
 var log         = require('../lib/logger')(module);
 
 mongoose.connect('mongodb://localhost/p2p');

@@ -1,6 +1,6 @@
 var async = require("async");
 var assert = require("assert");
-var mongoose = require("mongoose"); require('schema-emit-async')
+var mongoose = require('../mongoose'); require('schema-emit-async')
 var Schema = mongoose.Schema;
 
 var ProductSchema = require("./products").Product.schema.options;

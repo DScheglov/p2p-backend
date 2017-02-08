@@ -1,6 +1,6 @@
 var async = require("async");
 var assert = require('assert');
-var mongoose = require('mongoose');
+var mongoose = require('../../mongoose')
 var models = require('../../models/models');
 var fixtures = {
   institutions: require('../fixtures/institutions'),
@@ -57,7 +57,7 @@ describe("Institution.closeOperatingDate", function (done) {
       assert.ok(!err, "Error occured: " + (err&&err.message));
       assert.ok(results);
       assert.equal(results.contracts, fixtures.contracts.length);
-      assert.equal(results.accounts, fixtures.accounts.length + 1); // account of Interests for one of the contracts
+      assert.equal(results.accounts, fixtures.accounts.length); // ---account of Interests for one of the contracts
       assert.ok(institution.closedOperatingDate);
       assert.equal(institution.closedOperatingDate.toISOString(), expClosedDate.toISOString());
       assert.ok(!institution.operatingDate);

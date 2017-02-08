@@ -1,4 +1,4 @@
-var mongoose    = require('mongoose');
+var mongoose    = require('./mongoose');
 var log         = require('./lib/logger')(module);
 var Account   = require('./models/accounts').Account;
 var Transaction = require('./models/transactions').Transaction;

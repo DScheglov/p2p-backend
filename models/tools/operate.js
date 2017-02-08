@@ -1,5 +1,5 @@
 var assert = require('assert')
-var mongoose = require('mongoose');
+var mongoose = require('../../mongoose');
 var ensureCallback = require('./ensure').callback;
 module.exports = exports = operate;
 

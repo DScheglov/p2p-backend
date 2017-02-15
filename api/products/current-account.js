@@ -4,7 +4,8 @@ const modelAPI = require('../api');
 const models = require('../../models').models;
 
 modelAPI.expose(models.currentAccountProduct, {
-  plural: "CurrentAccountProducts"
+  plural: "CurrentAccountProducts",
+  options: false
 });
 
 
@@ -24,7 +25,8 @@ modelAPI.expose(models.currentAccountContract, {
   search: {
     populate: "accounts.current"
   },
-  populate: "accounts.current accounts.interests"
+  populate: "accounts.current accounts.interests",
+  options: false
 });
 
 module.exports = exports = modelAPI;

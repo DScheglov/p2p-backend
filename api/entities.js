@@ -5,12 +5,14 @@ const models = require('../models').models;
 
 modelAPI.expose(models.PrivateIndividual, {
   apiName: "PrivateIndividual",
-  plural: "PrivateIndividuals"
+  plural: "PrivateIndividuals",
+  options: false
 });
 
 modelAPI.expose(models.LegalEntity, {
   apiName: "LegalEntity",
-  plural: "LegalEntities"
+  plural: "LegalEntities",
+  options: false
 });
 
 module.exports = modelAPI;

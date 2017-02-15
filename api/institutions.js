@@ -4,7 +4,9 @@ const modelAPI = require('./api');
 const models = require('../models').models;
 
 modelAPI.expose(models.Institution, {
-  expose: {"*": true}
+  expose: {"*": true},
+  options: false,
+  searchFields: {}
 })
 
 module.exports = exports = modelAPI;

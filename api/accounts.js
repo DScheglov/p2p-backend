@@ -10,5 +10,6 @@ modelAPI.expose(models.AccountFactory, {
   plural: "AccountFactories",
   exposeStatic: {
     openAccount: "Opens an Account for requested schema"
-  }
+  },
+  options: false
 });

@@ -1,13 +1,16 @@
-var express = require('express');
-var bodyParser = require("body-parser");
-var methodOverride = require("method-override");
-var path = require('path');
+'use strict';
 
-var app = express();
-var log = require("./lib/logger")(module);
-var instHeader = require('./lib/institution-header');
-var db = require("./models/index").db;
-var modelAPI = require('./api');
+const express = require('express');
+const bodyParser = require("body-parser");
+const methodOverride = require("method-override");
+const path = require('path');
+
+const app = express();
+const config = require('./config');
+const log = require("./lib/logger")(module);
+const instHeader = require('./lib/institution-header');
+const db = require("./models/index").db;
+const modelAPI = require('./api');
 
 app.use(require('./lib/logger')(module, true));
 app.use(bodyParser.json());
@@ -28,6 +31,6 @@ app.use(function(err, req, res, next){
   return;
 });
 
-app.listen(1337, function(){
-  console.log('Express server listening on port 1337');
+app.listen(config.port, function() {
+  console.log(`Express server listening on port ${config.port}`);
 });

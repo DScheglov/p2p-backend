@@ -7,8 +7,8 @@ require('./accounts');
 require('./institutions');
 require('./transactions');
 require('./accounting-policies');
-require('./products');
-require('./contracts');
+//require('./products');
+//require('./contracts');
 require('./products/current-account');
 
 modelAPI.exposeSwaggerUi();

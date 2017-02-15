@@ -1,8 +1,10 @@
+'use strict';
+
 module.exports = exports = ensureDefaults;
 
 function ensureDefaults(schema, options) {
+  let notIsIn = null;
 
-  var notIsIn = null;
   if (options) {
     switch (typeof(options)) {
       case "array": notIsIn = function (v) { return options.indexOf(v)<0}; break;
@@ -11,16 +13,14 @@ function ensureDefaults(schema, options) {
     };
   }
 
-  schema.pre("validate", function (next) {
-    var paths = Object.keys(this.schema.paths);
-    var i=0;
-    for (;i<paths.length;i++) {
-      var p = paths[i];
-      if (notIsIn && notIsIn(v)) continue;
+  schema.pre("validate", function(next) {
+    if (!this._doc) return next();
+    Object.keys(this.schema.paths).forEach( p => {
+      if (notIsIn && notIsIn(p)) return;
       if (typeof(this.get(p)) === 'undefined') {
         this.set(p, this.schema.paths[p].getDefault(this));
       };
-    }
+    });
     next();
   });
 

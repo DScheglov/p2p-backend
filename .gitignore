@@ -8,3 +8,4 @@
 /pinguin/
 *.log
 /local/
+*/host.json
